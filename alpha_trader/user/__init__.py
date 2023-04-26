@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from typing import Dict, Union
 
 from alpha_trader.partner import Partner
+from alpha_trader.client import Client
+from alpha_trader.achievement import Achievement
+from alpha_trader.logging import logger
+from alpha_trader.securities_account import SecuritiesAccount
 
 
 class UserCapabilities(BaseModel):
@@ -33,9 +37,10 @@ class User(BaseModel):
     registration_date: int
     version: int
     my_user: bool
+    client: Client
 
     @staticmethod
-    def from_api_response(api_response: Dict):
+    def initialize_from_api_response(api_response: Dict, client: Client):
         return User(
             id=api_response["id"],
             username=api_response["username"],
@@ -62,5 +67,25 @@ class User(BaseModel):
             ref_id=api_response["refId"],
             registration_date=api_response["registrationDate"],
             version=api_response["version"],
-            my_user=api_response["myUser"]
+            my_user=api_response["myUser"],
+            client=client
         )
+
+    @property
+    def achievements(self):
+        response = self.client.request("GET", f"api/v2/userachievements/{self.username}")
+
+        logger.info("Retrieved achievements for user")
+
+        return [Achievement.initialize_from_api_response(res, self.client) for res in response.json()]
+
+    @property
+    def securities_account(self):
+        if not self.my_user:
+            raise Exception("Cannot retrieve securities account for other users")
+
+        response = self.client.request("GET", f"api/v2/my/securitiesaccount")
+
+        return SecuritiesAccount.initialize_from_api_response(response.json(), self.client)
+
+

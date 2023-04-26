@@ -3,7 +3,6 @@ from typing import Union, Dict
 import requests
 import os
 
-from alpha_trader.user import User
 from alpha_trader.logging import logger
 
 
@@ -67,7 +66,7 @@ class Client(BaseModel):
         """
         response = self.request("GET", "api/user")
 
-        return User.from_api_response(response.json())
+        return User.initialize_from_api_response(response.json(), self)
 
     def get_miner(self):
         """ Get the miner information for the authenticated user.
@@ -79,5 +78,26 @@ class Client(BaseModel):
 
         return Miner.from_api_response(response.json(), client=self)
 
+    def get_listing(self, security_identifier: str):
+        """ Get the listing information for a security.
+        :param security_identifier: Security identifier
+        :return: Listing
+        """
+        response = self.request("GET", f"/api/listings/{security_identifier}")
+
+        return Listing.from_api_response(response.json(), client=self)
+
+    def get_price_spread(self, security_identifier: str):
+        """ Get the price spread for a security.
+        :param security_identifier: Security identifier
+        :return: Price spread
+        """
+        response = self.request("GET", f"api/pricespreads/{security_identifier}")
+
+        return PriceSpread.initialize_from_api_response(response.json(), client=self)
+
 
 from alpha_trader.miner import Miner
+from alpha_trader.listing import Listing
+from alpha_trader.price.price_spread import PriceSpread
+from alpha_trader.user import User

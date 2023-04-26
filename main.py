@@ -16,5 +16,9 @@ if __name__ == "__main__":
     user = client.get_user()
     miner = client.get_miner()
     miner.transfer_coins()
+    coin_price = client.get_price_spread("ACALPHCOIN")
+
+    # if miner.next_level_amortization_hours < 720:
+    #     miner.upgrade()
 
     print("Done")
