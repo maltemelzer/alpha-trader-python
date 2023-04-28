@@ -3,3 +3,7 @@ theme:
   name: material
   palette:
     scheme: slate
+
+plugins:
+- search
+- mkdocstrings

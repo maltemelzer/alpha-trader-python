@@ -44,7 +44,7 @@ class Position(BaseModel):
         )
 
     def __str__(self):
-        return f"Position(security_identifier={self.security_identifier}, number_of_shares={self.number_of_shares})"
+        return f"Position(security_identifier={self.security_identifier}, number_of_shares={self.number_of_shares}, value=${self.volume / 100})"
 
     def __repr__(self):
         return self.__str__()

@@ -13,7 +13,7 @@ class Portfolio(BaseModel):
     client: Client
 
     @staticmethod
-    def initialize_from_api_response(api_response: Dict, client: Client):
+    def initialize_from_api_response(api_response: Dict, client: Client) -> "Portfolio":
         return Portfolio(
             cash=api_response["cash"],
             committed_cash=api_response["committedCash"],
@@ -30,5 +30,5 @@ class Portfolio(BaseModel):
         return self.__str__()
 
     @property
-    def uncommitted_cash(self):
+    def uncommitted_cash(self) -> int:
         return self.cash - self.committed_cash
