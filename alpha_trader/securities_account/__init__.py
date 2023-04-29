@@ -29,7 +29,19 @@ class SecuritiesAccount(BaseModel):
         return self.__str__()
 
     @property
-    def portfolio(self):
+    def portfolio(self) -> Portfolio:
         response = self.client.request("GET", f"api/portfolios/{self.id}")
 
         return Portfolio.initialize_from_api_response(response.json(), self.client)
+
+    def order(
+        self,
+        action: str,
+        check_order_only: bool,
+        counterpart: str,
+        valid_from_date: int,
+        valid_until_date: int,
+        hourly_change: str,
+            
+    ):
+        pass
