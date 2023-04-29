@@ -1,9 +1,27 @@
 site_name: Alpha Trader Python
 theme:
   name: material
+  locale: en
   palette:
     scheme: slate
+  features:
+    - navigation.tabs
+    - navigation.expand
+    - navigation.instant
+    - content.action.edit
+    - toc.follow
 
 plugins:
 - search
 - mkdocstrings
+- awesome-pages:
+    strict: false
+    collapse_single_pages: false
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+watch:
+  - alpha_trader

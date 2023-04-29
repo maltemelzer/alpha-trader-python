@@ -19,7 +19,30 @@ from alpha_trader.logging import logger
 
 class Client(BaseModel):
     """
-        Client for interacting with the API.
+        Client for interacting with the Alpha Trader API.
+
+        Example:
+            Authenticate and get a personal token:
+
+            ```python
+
+                >>> from alpha_trader.client import Client
+                >>> client = Client(
+                ...     base_url="https://stable.alpha-trader.com",
+                ...     username="YOUR_USERNAME",
+                ...     password="YOUR_PASSWORD",
+                ...     partner_id="YOUR_PARTNER_ID")
+                >>> client.login()
+                2023-04-29 09:34:54,872 - alpha_trader.logging - INFO - Client successfully authenticated.
+                >>> client.authenticated
+                True
+            ```
+
+            ```python
+            from alpha_trader.client import Client
+
+            ```
+
     """
     base_url: str
     username: str
@@ -31,8 +54,9 @@ class Client(BaseModel):
     def login(self) -> str:
         """
         Login to the API and get a token.
-        Returns: Token
 
+        Returns:
+            Token string
         """
         url = os.path.join(self.base_url, "user/token/")
 
@@ -51,7 +75,8 @@ class Client(BaseModel):
 
         return self.token
 
-    def get_headers(self):
+    def __get_headers(self):
+        """"""
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -59,14 +84,23 @@ class Client(BaseModel):
         return headers
 
     def request(self, method: str, endpoint: str, data: Dict = None) -> requests.Response:
-        """ Make a request using the authenticated client.
+        """ Make a request using the authenticated client. This method is mainly used internally by other classes
+        to retrieve more information from the API.
+
+        Example:
+            ```python
+            >>> response = client.request("GET", "api/user")
+            >>> user_information = response.json()
+            >>> user_information["username"]
+            Malte
 
         Args:
             method: HTTP method
             endpoint: Endpoint
             data: Data
 
-        Returns: HTTP Response
+        Returns:
+            HTTP Response
         """
 
         url = os.path.join(self.base_url, endpoint)
@@ -74,13 +108,25 @@ class Client(BaseModel):
         if not self.authenticated:
             raise Exception("Client is not authenticated.")
 
-        response = requests.request(method, url, data=data, headers=self.get_headers())
+        response = requests.request(method, url, data=data, headers=self.__get_headers())
 
         return response
 
     def get_user(self) -> User:
         """ Get the user information for the authenticated user.
-        :return: User
+        Example:
+            ```python
+            >>> user = client.get_user()
+            >>> user.username
+            'Malte'
+            >>> user.companies
+            [Company(name=Argo, security_identifier=STAD9A0F12), Company(name=Argo2, security_identifier=STA8D0230B)]
+            >>> user.securities_accounts
+            SecuritiesAccount(id=7b3f6182-be88-4b98-aa75-4c2fd10487ae)
+            ```
+
+        Returns:
+            User
         """
         from alpha_trader.user import User
         response = self.request("GET", "api/user")
@@ -94,7 +140,7 @@ class Client(BaseModel):
         from alpha_trader.miner import Miner
         url = os.path.join(self.base_url, "api/v2/my/miner")
 
-        response = requests.get(url, headers=self.get_headers())
+        response = requests.get(url, headers=self.__get_headers())
 
         return Miner.from_api_response(response.json(), client=self)
 
