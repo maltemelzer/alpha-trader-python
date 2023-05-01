@@ -35,12 +35,14 @@ class Position(BaseModel):
             last_buying_price=api_response["lastBuyingPrice"],
             last_price=Price.initialize_from_api_response(api_response["lastPrice"]),
             last_price_update=api_response["lastPriceUpdate"],
-            listing=Listing.initialize_from_api_response(api_response["listing"], client),
+            listing=Listing.initialize_from_api_response(
+                api_response["listing"], client
+            ),
             number_of_shares=api_response["numberOfShares"],
             security_identifier=api_response["securityIdentifier"],
             type=api_response["type"],
             volume=api_response["volume"],
-            client=client
+            client=client,
         )
 
     def __str__(self):

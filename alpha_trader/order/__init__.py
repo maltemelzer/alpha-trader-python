@@ -16,7 +16,7 @@ class Message(BaseModel):
         return Message(
             filledString=api_response["filledString"],
             message=api_response["message"],
-            substitutions=api_response["substitutions"]
+            substitutions=api_response["substitutions"],
         )
 
 
@@ -32,7 +32,7 @@ class OrderCheckResult(BaseModel):
             failed=api_response["failed"],
             msg=Message.initialize_from_api_response(api_response["msg"]),
             ok=api_response["ok"],
-            concerningParams=api_response["concerningParams"]
+            concerningParams=api_response["concerningParams"],
         )
 
 
@@ -81,7 +81,9 @@ class Order(BaseModel):
             good_till_date=api_response["goodTillDate"],
             hourly_change=api_response["hourlyChange"],
             id=api_response["id"],
-            listing=Listing.initialize_from_api_response(api_response["listing"], client),
+            listing=Listing.initialize_from_api_response(
+                api_response["listing"], client
+            ),
             next_hourly_change_date=api_response["nextHourlyChangeDate"],
             number_of_shares=api_response["numberOfShares"],
             owner=api_response["owner"],
@@ -92,12 +94,14 @@ class Order(BaseModel):
             security_identifier=api_response["securityIdentifier"],
             spread=PriceSpread.initialize_from_api_response(
                 api_response["spread"], client
-            ) if type(api_response["spread"]) == dict else None,
+            )
+            if type(api_response["spread"]) == dict
+            else None,
             type=api_response["type"],
             uncommitted_cash=api_response["uncommittedCash"],
             uncommitted_shares=api_response["uncommittedShares"],
             version=api_response["version"],
-            client=client
+            client=client,
         )
 
     def delete(self):
@@ -119,9 +123,8 @@ class Order(BaseModel):
         counter_party: str = None,
         hourly_change: float = None,
         check_order_only: bool = False,
-
     ) -> "Order":
-        """ Creates a new order.
+        """Creates a new order.
 
         Args:
             client: Alpha Trader Client
@@ -152,7 +155,7 @@ class Order(BaseModel):
             "owner": owner_securities_account_id,
             "securityIdentifier": security_identifier,
             "checkOrderOnly": check_order_only,
-            "hourlyChange": hourly_change
+            "hourlyChange": hourly_change,
         }
 
         response = client.request("POST", "api/securityorders", data=data)
@@ -160,8 +163,9 @@ class Order(BaseModel):
         return Order.initialize_from_api_response(response.json(), client)
 
     def __str__(self):
-        return f"{self.action} {self.number_of_shares} {self.listing.name} @ {self.price}"
+        return (
+            f"{self.action} {self.number_of_shares} {self.listing.name} @ {self.price}"
+        )
 
     def __repr__(self):
         return self.__str__()
-

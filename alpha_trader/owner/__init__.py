@@ -14,5 +14,5 @@ class Owner(BaseModel):
             clearing_account_id=api_response["clearingAccountId"],
             id=api_response["id"],
             private_account=api_response["privateAccount"],
-            version=api_response["version"]
+            version=api_response["version"],
         )

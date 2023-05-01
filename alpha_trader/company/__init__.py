@@ -25,24 +25,32 @@ class Company(BaseModel):
     def initialize_from_api_response(api_response: Dict, client: Client):
         return Company(
             achievement_count=api_response["achievementCount"],
-            bank_account=BankAccount.initialize_from_api_response(api_response["bankAccount"]),
+            bank_account=BankAccount.initialize_from_api_response(
+                api_response["bankAccount"]
+            ),
             ceo=User.initialize_from_api_response(api_response["ceo"], client),
             id=api_response["id"],
-            listing=Listing.initialize_from_api_response(api_response["listing"], client),
+            listing=Listing.initialize_from_api_response(
+                api_response["listing"], client
+            ),
             logo_url=api_response["logoUrl"],
             name=api_response["name"],
             securities_account_id=api_response["securitiesAccountId"],
             security_identifier=api_response["securityIdentifier"],
             version=api_response["version"],
-            client=client
+            client=client,
         )
 
     def update_from_api_response(self, api_response: Dict):
         self.achievement_count = api_response["achievementCount"]
-        self.bank_account = BankAccount.initialize_from_api_response(api_response["bankAccount"])
+        self.bank_account = BankAccount.initialize_from_api_response(
+            api_response["bankAccount"]
+        )
         self.ceo = User.initialize_from_api_response(api_response["ceo"], self.client)
         self.id = api_response["id"]
-        self.listing = Listing.initialize_from_api_response(api_response["listing"], self.client)
+        self.listing = Listing.initialize_from_api_response(
+            api_response["listing"], self.client
+        )
         self.logo_url = api_response["logoUrl"]
         self.name = api_response["name"]
         self.securities_account_id = api_response["securitiesAccountId"]
@@ -50,7 +58,9 @@ class Company(BaseModel):
         self.version = api_response["version"]
 
     def __str__(self):
-        return f"Company(name={self.name}, security_identifier={self.security_identifier})"
+        return (
+            f"Company(name={self.name}, security_identifier={self.security_identifier})"
+        )
 
     def __repr__(self):
         return self.__str__()
@@ -58,4 +68,3 @@ class Company(BaseModel):
     @property
     def securities_account(self):
         return self.client.get_securities_account(self.securities_account_id)
-

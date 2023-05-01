@@ -8,15 +8,16 @@ from alpha_trader.order import Order
 
 class SecuritiesAccount(BaseModel):
     """
-        Securities account model
+    Securities account model
 
-        Attributes:
-            clearing_account_id: Clearing account ID of the securities account
-            id: securities account ID
-            private_account: Flag if the securities account is private
-            version: Version of the securities account
-            client: Client of the securities account (for interaction with the API)
+    Attributes:
+        clearing_account_id: Clearing account ID of the securities account
+        id: securities account ID
+        private_account: Flag if the securities account is private
+        version: Version of the securities account
+        client: Client of the securities account (for interaction with the API)
     """
+
     clearing_account_id: str
     id: str
     private_account: bool
@@ -30,7 +31,7 @@ class SecuritiesAccount(BaseModel):
             id=api_response["id"],
             private_account=api_response["privateAccount"],
             version=api_response["version"],
-            client=client
+            client=client,
         )
 
     def __str__(self):
@@ -57,19 +58,24 @@ class SecuritiesAccount(BaseModel):
         Returns:
             List of orders
         """
-        response = self.client.request("GET", f"api/securityorders/securitiesaccount/{self.id}")
+        response = self.client.request(
+            "GET", f"api/securityorders/securitiesaccount/{self.id}"
+        )
 
-        return [Order.initialize_from_api_response(res, self.client) for res in response.json()]
+        return [
+            Order.initialize_from_api_response(res, self.client)
+            for res in response.json()
+        ]
 
     def order(
-            self,
-            action: str,
-            order_type: str,
-            price: float,
-            quantity: int,
-            security_identifier: str
+        self,
+        action: str,
+        order_type: str,
+        price: float,
+        quantity: int,
+        security_identifier: str,
     ) -> Order:
-        """ Create an order for this securities account
+        """Create an order for this securities account
 
         Args:
             action: action of the order "BUY" or "SELL"
@@ -88,6 +94,5 @@ class SecuritiesAccount(BaseModel):
             quantity=quantity,
             security_identifier=security_identifier,
             client=self.client,
-            owner_securities_account_id=self.id
+            owner_securities_account_id=self.id,
         )
-

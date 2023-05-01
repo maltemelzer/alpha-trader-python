@@ -5,6 +5,7 @@ from alpha_trader.listing import Listing
 from alpha_trader.price.price import Price
 from alpha_trader.client import Client
 
+
 class PriceSpread(BaseModel):
     listing: Listing
     bid_price: float
@@ -24,7 +25,9 @@ class PriceSpread(BaseModel):
     @staticmethod
     def initialize_from_api_response(api_response: Dict, client: Client):
         return PriceSpread(
-            listing=Listing.initialize_from_api_response(api_response["listing"], client=client),
+            listing=Listing.initialize_from_api_response(
+                api_response["listing"], client=client
+            ),
             bid_price=api_response["bidPrice"],
             bid_size=api_response["bidSize"],
             ask_price=api_response["askPrice"],
@@ -37,5 +40,5 @@ class PriceSpread(BaseModel):
             name=api_response["listing"]["name"],
             security_identifier=api_response["listing"]["securityIdentifier"],
             start_date=api_response["listing"]["startDate"],
-            type=api_response["listing"]["type"]
+            type=api_response["listing"]["type"],
         )

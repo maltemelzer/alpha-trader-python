@@ -27,7 +27,7 @@ class Achievement(BaseModel):
             endDate=api_response["endDate"],
             id=api_response["id"],
             version=api_response["version"],
-            client=client
+            client=client,
         )
 
     def update_from_api_response(self, api_response: Dict):
@@ -50,8 +50,12 @@ class Achievement(BaseModel):
         if self.claimed:
             raise Exception("Achievement already claimed")
 
-        response = self.client.request("PUT", f"api/v2/my/userachievementclaim/{self.id}")
+        response = self.client.request(
+            "PUT", f"api/v2/my/userachievementclaim/{self.id}"
+        )
 
         self.update_from_api_response(response.json())
 
-        logger.info(f'Achievement for "{self.description}" claimed. New claimed status: {self.claimed}')
+        logger.info(
+            f'Achievement for "{self.description}" claimed. New claimed status: {self.claimed}'
+        )

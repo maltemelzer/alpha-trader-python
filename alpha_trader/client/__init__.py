@@ -19,31 +19,32 @@ from alpha_trader.logging import logger
 
 class Client(BaseModel):
     """
-        Client for interacting with the Alpha Trader API.
+    Client for interacting with the Alpha Trader API.
 
-        Example:
-            Authenticate and get a personal token:
+    Example:
+        Authenticate and get a personal token:
 
-            ```python
+        ```python
 
-                >>> from alpha_trader.client import Client
-                >>> client = Client(
-                ...     base_url="https://stable.alpha-trader.com",
-                ...     username="YOUR_USERNAME",
-                ...     password="YOUR_PASSWORD",
-                ...     partner_id="YOUR_PARTNER_ID")
-                >>> client.login()
-                2023-04-29 09:34:54,872 - alpha_trader.logging - INFO - Client successfully authenticated.
-                >>> client.authenticated
-                True
-            ```
+            >>> from alpha_trader.client import Client
+            >>> client = Client(
+            ...     base_url="https://stable.alpha-trader.com",
+            ...     username="YOUR_USERNAME",
+            ...     password="YOUR_PASSWORD",
+            ...     partner_id="YOUR_PARTNER_ID")
+            >>> client.login()
+            2023-04-29 09:34:54,872 - alpha_trader.logging - INFO - Client successfully authenticated.
+            >>> client.authenticated
+            True
+        ```
 
-            ```python
-            from alpha_trader.client import Client
+        ```python
+        from alpha_trader.client import Client
 
-            ```
+        ```
 
     """
+
     base_url: str
     username: str
     password: str
@@ -63,7 +64,7 @@ class Client(BaseModel):
         payload = {
             "username": self.username,
             "password": self.password,
-            "partnerId": self.partner_id
+            "partnerId": self.partner_id,
         }
 
         response = requests.request("POST", url, data=payload)
@@ -77,14 +78,14 @@ class Client(BaseModel):
 
     def __get_headers(self):
         """"""
-        headers = {
-            "Authorization": f"Bearer {self.token}"
-        }
+        headers = {"Authorization": f"Bearer {self.token}"}
 
         return headers
 
-    def request(self, method: str, endpoint: str, data: Dict = None) -> requests.Response:
-        """ Make a request using the authenticated client. This method is mainly used internally by other classes
+    def request(
+        self, method: str, endpoint: str, data: Dict = None
+    ) -> requests.Response:
+        """Make a request using the authenticated client. This method is mainly used internally by other classes
         to retrieve more information from the API.
 
         Example:
@@ -108,12 +109,14 @@ class Client(BaseModel):
         if not self.authenticated:
             raise Exception("Client is not authenticated.")
 
-        response = requests.request(method, url, data=data, headers=self.__get_headers())
+        response = requests.request(
+            method, url, data=data, headers=self.__get_headers()
+        )
 
         return response
 
     def get_user(self) -> User:
-        """ Get the user information for the authenticated user.
+        """Get the user information for the authenticated user.
         Example:
             ```python
             >>> user = client.get_user()
@@ -129,15 +132,17 @@ class Client(BaseModel):
             User
         """
         from alpha_trader.user import User
+
         response = self.request("GET", "api/user")
 
         return User.initialize_from_api_response(response.json(), self)
 
     def get_miner(self) -> Miner:
-        """ Get the miner information for the authenticated user.
+        """Get the miner information for the authenticated user.
         :return: Miner
         """
         from alpha_trader.miner import Miner
+
         url = os.path.join(self.base_url, "api/v2/my/miner")
 
         response = requests.get(url, headers=self.__get_headers())
@@ -145,32 +150,38 @@ class Client(BaseModel):
         return Miner.from_api_response(response.json(), client=self)
 
     def get_listing(self, security_identifier: str) -> Listing:
-        """ Get the listing information for a security.
+        """Get the listing information for a security.
         :param security_identifier: Security identifier
         :return: Listing
         """
         from alpha_trader.listing import Listing
+
         response = self.request("GET", f"/api/listings/{security_identifier}")
 
         return Listing.initialize_from_api_response(response.json(), client=self)
 
     def get_price_spread(self, security_identifier: str) -> PriceSpread:
-        """ Get the price spread for a security.
+        """Get the price spread for a security.
         :param security_identifier: Security identifier
         :return: Price spread
         """
         from alpha_trader.price.price_spread import PriceSpread
+
         response = self.request("GET", f"api/pricespreads/{security_identifier}")
 
         return PriceSpread.initialize_from_api_response(response.json(), client=self)
 
     def get_securities_account(self, securities_account_id: str) -> SecuritiesAccount:
-        """ Get the securities account for a given ID.
+        """Get the securities account for a given ID.
         :param securities_account_id: Securities account ID
         :return: Securities account
         """
         from alpha_trader.securities_account import SecuritiesAccount
-        response = self.request("GET", f"api/v2/securitiesaccountdetails/{securities_account_id}")
 
-        return SecuritiesAccount.initialize_from_api_response(response.json(), client=self)
+        response = self.request(
+            "GET", f"api/v2/securitiesaccountdetails/{securities_account_id}"
+        )
 
+        return SecuritiesAccount.initialize_from_api_response(
+            response.json(), client=self
+        )

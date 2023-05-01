@@ -16,24 +16,25 @@ if TYPE_CHECKING:
 
 class UserCapabilities(BaseModel):
     """
-        User capabilities model
+    User capabilities model
 
-        Attributes:
-            partner_id: Partner ID of the user
-            achievement_count: Achievement count of the user
-            achievement_total: Achievement total of the user
-            last_sponsoring_date: Last sponsoring date of the user
-            level_2_user_end_date: Level 2 user end date of the user
-            locale: Locale of the user
-            premium_end_date: Premium end date of the user
-            sponsored_hours: Sponsored hours of the user
-            team_department: Team department of the user
-            team_role: Team role of the user
-            team_role_description: Team role description of the user
-            level_2_user: Level 2 user of the user
-            partner: Flag if the user is a partner
-            premium: Flag if the user is premium
+    Attributes:
+        partner_id: Partner ID of the user
+        achievement_count: Achievement count of the user
+        achievement_total: Achievement total of the user
+        last_sponsoring_date: Last sponsoring date of the user
+        level_2_user_end_date: Level 2 user end date of the user
+        locale: Locale of the user
+        premium_end_date: Premium end date of the user
+        sponsored_hours: Sponsored hours of the user
+        team_department: Team department of the user
+        team_role: Team role of the user
+        team_role_description: Team role description of the user
+        level_2_user: Level 2 user of the user
+        partner: Flag if the user is a partner
+        premium: Flag if the user is premium
     """
+
     partner_id: Union[str, None]
     achievement_count: int
     achievement_total: int
@@ -52,22 +53,23 @@ class UserCapabilities(BaseModel):
 
 class User(BaseModel):
     """
-        User model
+    User model
 
-        Attributes:
-            id: ID of the user
-            username: Username of the user
-            email: Email of the user, only available for own user
-            jwt_token: JWT token of the user, only available for own user
-            email_subscription_type: Email subscription type of the user, only available for own user
-            capabilities: Capabilities of the user
-            gravatar_hash: Gravatar hash of the user
-            ref_id: Ref ID of the user
-            registration_date: Registration date of the user
-            version: Version of the user
-            my_user: Flag if the user is my user
-            client: Client
+    Attributes:
+        id: ID of the user
+        username: Username of the user
+        email: Email of the user, only available for own user
+        jwt_token: JWT token of the user, only available for own user
+        email_subscription_type: Email subscription type of the user, only available for own user
+        capabilities: Capabilities of the user
+        gravatar_hash: Gravatar hash of the user
+        ref_id: Ref ID of the user
+        registration_date: Registration date of the user
+        version: Version of the user
+        my_user: Flag if the user is my user
+        client: Client
     """
+
     id: str
     username: str
     email: Union[str, None]
@@ -93,24 +95,30 @@ class User(BaseModel):
                 partner_id=api_response["userCapabilities"].get("partnerId", None),
                 achievement_count=api_response["userCapabilities"]["achievementCount"],
                 achievement_total=api_response["userCapabilities"]["achievementTotal"],
-                last_sponsoring_date=api_response["userCapabilities"]["lastSponsoringDate"],
-                level_2_user_end_date=api_response["userCapabilities"]["level2UserEndDate"],
+                last_sponsoring_date=api_response["userCapabilities"][
+                    "lastSponsoringDate"
+                ],
+                level_2_user_end_date=api_response["userCapabilities"][
+                    "level2UserEndDate"
+                ],
                 locale=api_response["userCapabilities"]["locale"],
                 premium_end_date=api_response["userCapabilities"]["premiumEndDate"],
                 sponsored_hours=api_response["userCapabilities"]["sponsoredHours"],
                 team_department=api_response["userCapabilities"]["teamDepartment"],
                 team_role=api_response["userCapabilities"]["teamRole"],
-                team_role_description=api_response["userCapabilities"]["teamRoleDescription"],
+                team_role_description=api_response["userCapabilities"][
+                    "teamRoleDescription"
+                ],
                 level_2_user=api_response["userCapabilities"]["level2User"],
                 partner=api_response["userCapabilities"]["partner"],
-                premium=api_response["userCapabilities"]["premium"]
+                premium=api_response["userCapabilities"]["premium"],
             ),
             gravatar_hash=api_response["gravatarHash"],
             ref_id=api_response["refId"],
             registration_date=api_response["registrationDate"],
             version=api_response["version"],
             my_user=api_response["myUser"],
-            client=client
+            client=client,
         )
 
     @property
@@ -121,11 +129,16 @@ class User(BaseModel):
         Returns:
             List of achievements
         """
-        response = self.client.request("GET", f"api/v2/userachievements/{self.username}")
+        response = self.client.request(
+            "GET", f"api/v2/userachievements/{self.username}"
+        )
 
         logger.info("Retrieved achievements for user")
 
-        return [Achievement.initialize_from_api_response(res, self.client) for res in response.json()]
+        return [
+            Achievement.initialize_from_api_response(res, self.client)
+            for res in response.json()
+        ]
 
     @property
     def securities_account(self):
@@ -140,14 +153,16 @@ class User(BaseModel):
 
         response = self.client.request("GET", f"api/v2/my/securitiesaccount")
 
-        return SecuritiesAccount.initialize_from_api_response(response.json(), self.client)
+        return SecuritiesAccount.initialize_from_api_response(
+            response.json(), self.client
+        )
 
     def found_company(
-            self,
-            company_name: str,
-            cash_deposit: float,
-            custom_number_of_shares: Union[int, None] = None,
-            custom_asin: Union[str, None] = None
+        self,
+        company_name: str,
+        cash_deposit: float,
+        custom_number_of_shares: Union[int, None] = None,
+        custom_asin: Union[str, None] = None,
     ) -> Company:
         """
             Found a company
@@ -166,7 +181,7 @@ class User(BaseModel):
             "name": company_name,
             "cashDeposit": cash_deposit,
             "customNumberOfShares": custom_number_of_shares,
-            "customAsin": custom_asin
+            "customAsin": custom_asin,
         }
 
         response = self.client.request("POST", "api/companies", data=data)
@@ -184,7 +199,10 @@ class User(BaseModel):
 
         response = self.client.request("GET", f"api/companies/ceo/userid/{self.id}")
 
-        return [Company.initialize_from_api_response(res, self.client) for res in response.json()]
+        return [
+            Company.initialize_from_api_response(res, self.client)
+            for res in response.json()
+        ]
 
     @property
     def salary(self) -> float:

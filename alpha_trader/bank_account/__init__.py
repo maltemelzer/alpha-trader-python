@@ -12,7 +12,7 @@ class BankAccount(BaseModel):
         return BankAccount(
             cash=api_response["cash"],
             id=api_response["id"],
-            version=api_response["version"]
+            version=api_response["version"],
         )
 
     def __str__(self):

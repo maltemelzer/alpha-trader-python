@@ -20,7 +20,7 @@ class Listing(BaseModel):
             security_identifier=api_response["securityIdentifier"],
             start_date=api_response["startDate"],
             type=api_response["type"],
-            client=client
+            client=client,
         )
 
     def update_from_api_response(self, api_response: Dict):

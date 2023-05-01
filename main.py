@@ -8,7 +8,7 @@ if __name__ == "__main__":
         base_url=os.getenv("BASE_URL"),
         username=os.getenv("USERNAME"),
         password=os.getenv("PASSWORD"),
-        partner_id=os.getenv("PARTNER_ID")
+        partner_id=os.getenv("PARTNER_ID"),
     )
 
     client.login()

@@ -7,15 +7,16 @@ from alpha_trader.client import Client
 
 class Portfolio(BaseModel):
     """
-        Portfolio model
+    Portfolio model
 
-        Attributes:
-            cash: Cash of the portfolio
-            committed_cash: Committed cash of the portfolio
-            positions: Positions of the portfolio
-            securities_account_id: Securities account ID of the portfolio
-            client: Client of the portfolio (for interaction with the API)
+    Attributes:
+        cash: Cash of the portfolio
+        committed_cash: Committed cash of the portfolio
+        positions: Positions of the portfolio
+        securities_account_id: Securities account ID of the portfolio
+        client: Client of the portfolio (for interaction with the API)
     """
+
     cash: int
     committed_cash: int
     positions: Union[List[Position], None]
@@ -27,9 +28,12 @@ class Portfolio(BaseModel):
         return Portfolio(
             cash=api_response["cash"],
             committed_cash=api_response["committedCash"],
-            positions=[Position.initialize_from_api_response(res, client) for res in api_response["positions"]],
+            positions=[
+                Position.initialize_from_api_response(res, client)
+                for res in api_response["positions"]
+            ],
             securities_account_id=api_response["securitiesAccountId"],
-            client=client
+            client=client,
         )
 
     def __str__(self):
