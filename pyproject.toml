@@ -20,7 +20,13 @@ mkdocstrings = {extras = ["python"], version = "^0.21.2"}
 mkdocs-awesome-pages-plugin = "^2.9.0"
 black = "^23.3.0"
 flake8 = "^6.0.0"
+python-semantic-release = "^7.33.3"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.semantic_release]
+version_variable = "pyproject.toml:version"
+version_source = "tag"
+branch = "main"
