@@ -72,7 +72,7 @@ class Client(BaseModel):
         self.token = response.json()["message"]
         self.authenticated = True
 
-        logger.info(f"Client successfully authenticated.")
+        logger.info("Client successfully authenticated.")
 
         return self.token
 

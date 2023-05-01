@@ -1,12 +1,11 @@
 import logging
-import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # create console handler and set level to debug
 ch = logging.StreamHandler()
-file_handler = logging.FileHandler(f"logs/example.log")
+file_handler = logging.FileHandler("logs/example.log")
 ch.setLevel(logging.DEBUG)
 file_handler.setLevel(logging.DEBUG)
 

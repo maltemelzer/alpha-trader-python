@@ -41,7 +41,9 @@ class Achievement(BaseModel):
         self.version = api_response["version"]
 
     def __str__(self):
-        return f"Achievement(description={self.description}, type={self.type}, achievedDate={self.achievedDate}, claimed={self.claimed}, coinReward={self.coinReward}, endDate={self.endDate}, id={self.id}, version={self.version})"
+        return f"Achievement(description={self.description}, type={self.type}, achievedDate={self.achievedDate}, " \
+               f"claimed={self.claimed}, coinReward={self.coinReward}, endDate={self.endDate}, id={self.id}, " \
+               f"version={self.version}) "
 
     def __repr__(self):
         return self.__str__()

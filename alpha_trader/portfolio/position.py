@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Union
+from typing import Dict
 
 from alpha_trader.listing import Listing
 from alpha_trader.price.price import Price
@@ -46,7 +46,8 @@ class Position(BaseModel):
         )
 
     def __str__(self):
-        return f"Position(security_identifier={self.security_identifier}, number_of_shares={self.number_of_shares}, value=${self.volume / 100})"
+        return f"Position(security_identifier={self.security_identifier}, number_of_shares={self.number_of_shares}, " \
+               f"value=${self.volume / 100}) "
 
     def __repr__(self):
         return self.__str__()

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict, Union
+from typing import Dict
 
 from alpha_trader.client import Client
 from alpha_trader.user import User

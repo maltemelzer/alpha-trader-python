@@ -151,7 +151,7 @@ class User(BaseModel):
         if not self.my_user:
             raise Exception("Cannot retrieve securities account for other users")
 
-        response = self.client.request("GET", f"api/v2/my/securitiesaccount")
+        response = self.client.request("GET", "api/v2/my/securitiesaccount")
 
         return SecuritiesAccount.initialize_from_api_response(
             response.json(), self.client

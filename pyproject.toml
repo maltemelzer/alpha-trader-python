@@ -19,6 +19,7 @@ mkdocs-material = "^9.1.8"
 mkdocstrings = {extras = ["python"], version = "^0.21.2"}
 mkdocs-awesome-pages-plugin = "^2.9.0"
 black = "^23.3.0"
+flake8 = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]
