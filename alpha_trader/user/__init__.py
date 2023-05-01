@@ -15,6 +15,25 @@ if TYPE_CHECKING:
 
 
 class UserCapabilities(BaseModel):
+    """
+        User capabilities model
+
+        Attributes:
+            partner_id: Partner ID of the user
+            achievement_count: Achievement count of the user
+            achievement_total: Achievement total of the user
+            last_sponsoring_date: Last sponsoring date of the user
+            level_2_user_end_date: Level 2 user end date of the user
+            locale: Locale of the user
+            premium_end_date: Premium end date of the user
+            sponsored_hours: Sponsored hours of the user
+            team_department: Team department of the user
+            team_role: Team role of the user
+            team_role_description: Team role description of the user
+            level_2_user: Level 2 user of the user
+            partner: Flag if the user is a partner
+            premium: Flag if the user is premium
+    """
     partner_id: Union[str, None]
     achievement_count: int
     achievement_total: int
@@ -32,6 +51,23 @@ class UserCapabilities(BaseModel):
 
 
 class User(BaseModel):
+    """
+        User model
+
+        Attributes:
+            id: ID of the user
+            username: Username of the user
+            email: Email of the user, only available for own user
+            jwt_token: JWT token of the user, only available for own user
+            email_subscription_type: Email subscription type of the user, only available for own user
+            capabilities: Capabilities of the user
+            gravatar_hash: Gravatar hash of the user
+            ref_id: Ref ID of the user
+            registration_date: Registration date of the user
+            version: Version of the user
+            my_user: Flag if the user is my user
+            client: Client
+    """
     id: str
     username: str
     email: Union[str, None]
@@ -79,6 +115,12 @@ class User(BaseModel):
 
     @property
     def achievements(self):
+        """
+            Achievements of the user
+
+        Returns:
+            List of achievements
+        """
         response = self.client.request("GET", f"api/v2/userachievements/{self.username}")
 
         logger.info("Retrieved achievements for user")
@@ -87,6 +129,12 @@ class User(BaseModel):
 
     @property
     def securities_account(self):
+        """
+            Get the securities account for the user
+
+        Returns:
+            Securities account
+        """
         if not self.my_user:
             raise Exception("Cannot retrieve securities account for other users")
 
@@ -102,14 +150,15 @@ class User(BaseModel):
             custom_asin: Union[str, None] = None
     ) -> Company:
         """
-        Found a company
+            Found a company
         Args:
             company_name: Name of the company
             cash_deposit: Initial cash that should be deposited to the company
             custom_number_of_shares: Custom number of shares (premium feature)
             custom_asin: Custom ASIN (premium feature)
 
-        Returns: Company
+        Returns:
+            Company
         """
         from alpha_trader.company import Company
 

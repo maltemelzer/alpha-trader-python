@@ -6,6 +6,16 @@ from alpha_trader.client import Client
 
 
 class Portfolio(BaseModel):
+    """
+        Portfolio model
+
+        Attributes:
+            cash: Cash of the portfolio
+            committed_cash: Committed cash of the portfolio
+            positions: Positions of the portfolio
+            securities_account_id: Securities account ID of the portfolio
+            client: Client of the portfolio (for interaction with the API)
+    """
     cash: int
     committed_cash: int
     positions: Union[List[Position], None]
@@ -30,5 +40,10 @@ class Portfolio(BaseModel):
         return self.__str__()
 
     @property
-    def uncommitted_cash(self) -> int:
+    def uncommitted_cash(self) -> float:
+        """
+            Uncommitted cash of the portfolio
+        Returns:
+            Uncommitted cash
+        """
         return self.cash - self.committed_cash

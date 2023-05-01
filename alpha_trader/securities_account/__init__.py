@@ -7,6 +7,16 @@ from alpha_trader.order import Order
 
 
 class SecuritiesAccount(BaseModel):
+    """
+        Securities account model
+
+        Attributes:
+            clearing_account_id: Clearing account ID of the securities account
+            id: securities account ID
+            private_account: Flag if the securities account is private
+            version: Version of the securities account
+            client: Client of the securities account (for interaction with the API)
+    """
     clearing_account_id: str
     id: str
     private_account: bool
@@ -31,12 +41,22 @@ class SecuritiesAccount(BaseModel):
 
     @property
     def portfolio(self) -> Portfolio:
+        """
+            Portfolio of this securities account
+        Returns:
+            Portfolio
+        """
         response = self.client.request("GET", f"api/portfolios/{self.id}")
 
         return Portfolio.initialize_from_api_response(response.json(), self.client)
 
     @property
     def orders(self) -> List[Order]:
+        """
+            Orders for this securities account
+        Returns:
+            List of orders
+        """
         response = self.client.request("GET", f"api/securityorders/securitiesaccount/{self.id}")
 
         return [Order.initialize_from_api_response(res, self.client) for res in response.json()]

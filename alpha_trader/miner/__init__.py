@@ -11,6 +11,21 @@ from alpha_trader.logging import logger
 
 
 class Miner(BaseModel):
+    """
+        Miner model
+
+        Attributes:
+            coins_per_hour: Number of coins that are mined per hour
+            id: ID of the miner
+            maximum_capacity: Maximum capacity of the miner, before transfer is needed
+            next_level_coins_per_hour: Coins per hour of the miner on the next level
+            next_level_costs: Costs of the next level of the miner
+            owner: Owner of the miner
+            storage: Storage of the miner
+            transferable_coins: Transferable coins of the miner
+            version: Version of the miner
+            client: Client of the miner (for interaction with the API)
+    """
     coins_per_hour: int
     id: str
     maximum_capacity: int
@@ -49,6 +64,11 @@ class Miner(BaseModel):
         self.version = api_response["version"]
 
     def transfer_coins(self):
+        """
+            Transfer coins from the miner to the clearing account
+        Returns:
+            API response
+        """
         response = self.client.request("PUT", "api/v2/my/cointransfer")
         self.update_from_api_response(response.json())
 
@@ -57,8 +77,10 @@ class Miner(BaseModel):
         return response.json()
 
     def upgrade(self) -> Dict:
-        """ Upgrade the miner to the next level.
-        :return: API response
+        """
+            Upgrade the miner to the next level.
+        Returns:
+            API response
         """
         response = self.client.request("PUT", "api/v2/my/minerupgrade")
         self.update_from_api_response(response.json())
@@ -70,15 +92,19 @@ class Miner(BaseModel):
         return response.json()
 
     def __get_coin_bid_price(self):
-        """ Get the coin bid price.
-        :return: Coin bid price
+        """
+            Get the coin bid price.
+        Returns:
+            Coin bid price
         """
         return self.client.get_price_spread("ACALPHCOIN").bid_price
 
     @property
-    def next_level_amortization_hours(self) -> int:
-        """ Calculate the next level amortization.
-        :return: Amortization
+    def next_level_amortization_hours(self) -> float:
+        """
+            Number of hours until the next level of the miner is amortized.
+        Returns:
+            Number of hours until the next level of the miner is amortized
         """
         coin_bid_price = self.__get_coin_bid_price()
         additional_earnings_per_hour = (self.next_level_coins_per_hour - self.coins_per_hour) * coin_bid_price
