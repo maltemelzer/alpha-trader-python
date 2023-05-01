@@ -1,8 +1,9 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, List
 
 from alpha_trader.client import Client
 from alpha_trader.portfolio import Portfolio
+from alpha_trader.order import Order
 
 
 class SecuritiesAccount(BaseModel):
@@ -34,14 +35,39 @@ class SecuritiesAccount(BaseModel):
 
         return Portfolio.initialize_from_api_response(response.json(), self.client)
 
+    @property
+    def orders(self) -> List[Order]:
+        response = self.client.request("GET", f"api/securityorders/securitiesaccount/{self.id}")
+
+        return [Order.initialize_from_api_response(res, self.client) for res in response.json()]
+
     def order(
-        self,
-        action: str,
-        check_order_only: bool,
-        counterpart: str,
-        valid_from_date: int,
-        valid_until_date: int,
-        hourly_change: str,
-            
-    ):
-        pass
+            self,
+            action: str,
+            order_type: str,
+            price: float,
+            quantity: int,
+            security_identifier: str
+    ) -> Order:
+        """ Create an order for this securities account
+
+        Args:
+            action: action of the order "BUY" or "SELL"
+            order_type: order type "LIMIT" or "MARKET"
+            price: price of the order
+            quantity: number of shares
+            security_identifier: security identifier of the order
+
+        Returns:
+            Order
+        """
+        return Order.create(
+            action=action,
+            order_type=order_type,
+            price=price,
+            quantity=quantity,
+            security_identifier=security_identifier,
+            client=self.client,
+            owner_securities_account_id=self.id
+        )
+

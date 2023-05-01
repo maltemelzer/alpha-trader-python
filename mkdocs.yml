@@ -16,7 +16,7 @@ plugins:
 - mkdocstrings
 - awesome-pages:
     strict: false
-    collapse_single_pages: false
+    collapse_single_pages: true
 
 markdown_extensions:
   - admonition

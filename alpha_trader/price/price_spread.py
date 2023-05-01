@@ -24,7 +24,7 @@ class PriceSpread(BaseModel):
     @staticmethod
     def initialize_from_api_response(api_response: Dict, client: Client):
         return PriceSpread(
-            listing=Listing.from_api_response(api_response["listing"], client=client),
+            listing=Listing.initialize_from_api_response(api_response["listing"], client=client),
             bid_price=api_response["bidPrice"],
             bid_size=api_response["bidSize"],
             ask_price=api_response["askPrice"],

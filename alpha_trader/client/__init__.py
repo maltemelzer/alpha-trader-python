@@ -152,7 +152,7 @@ class Client(BaseModel):
         from alpha_trader.listing import Listing
         response = self.request("GET", f"/api/listings/{security_identifier}")
 
-        return Listing.from_api_response(response.json(), client=self)
+        return Listing.initialize_from_api_response(response.json(), client=self)
 
     def get_price_spread(self, security_identifier: str) -> PriceSpread:
         """ Get the price spread for a security.

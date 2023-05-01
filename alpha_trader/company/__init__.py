@@ -28,7 +28,7 @@ class Company(BaseModel):
             bank_account=BankAccount.initialize_from_api_response(api_response["bankAccount"]),
             ceo=User.initialize_from_api_response(api_response["ceo"], client),
             id=api_response["id"],
-            listing=Listing.from_api_response(api_response["listing"], client),
+            listing=Listing.initialize_from_api_response(api_response["listing"], client),
             logo_url=api_response["logoUrl"],
             name=api_response["name"],
             securities_account_id=api_response["securitiesAccountId"],
@@ -42,7 +42,7 @@ class Company(BaseModel):
         self.bank_account = BankAccount.initialize_from_api_response(api_response["bankAccount"])
         self.ceo = User.initialize_from_api_response(api_response["ceo"], self.client)
         self.id = api_response["id"]
-        self.listing = Listing.from_api_response(api_response["listing"], self.client)
+        self.listing = Listing.initialize_from_api_response(api_response["listing"], self.client)
         self.logo_url = api_response["logoUrl"]
         self.name = api_response["name"]
         self.securities_account_id = api_response["securitiesAccountId"]

@@ -54,4 +54,4 @@ class Achievement(BaseModel):
 
         self.update_from_api_response(response.json())
 
-        logger.info(f"Achievement claimed. New claimed status: {self.claimed}")
+        logger.info(f'Achievement for "{self.description}" claimed. New claimed status: {self.claimed}')

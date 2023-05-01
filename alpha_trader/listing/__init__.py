@@ -13,7 +13,7 @@ class Listing(BaseModel):
     client: Client
 
     @staticmethod
-    def from_api_response(api_response: Dict, client: Client):
+    def initialize_from_api_response(api_response: Dict, client: Client):
         return Listing(
             end_date=api_response["endDate"],
             name=api_response["name"],
