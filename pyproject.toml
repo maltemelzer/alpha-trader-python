@@ -27,6 +27,12 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:version"
+version_variable = [
+    "pyproject.toml:version",
+    "alpha_trader/__init__.py:__version__"
+]
 version_source = "tag"
+upload_to_release = false
+upload_to_pypi = false
 branch = "main"
+build_command = "pip install poetry && poetry build"
