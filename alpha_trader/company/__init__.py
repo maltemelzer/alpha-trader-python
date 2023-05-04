@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 from pydantic import BaseModel
 from typing import Dict
 
 from alpha_trader.client import Client
-from alpha_trader.user import User
 from alpha_trader.listing import Listing
 from alpha_trader.bank_account import BankAccount
+from alpha_trader.bonds import Bond
+from alpha_trader.user import User
 
 
 class Company(BaseModel):
@@ -23,6 +26,8 @@ class Company(BaseModel):
 
     @staticmethod
     def initialize_from_api_response(api_response: Dict, client: Client):
+        from alpha_trader.user import User
+
         return Company(
             achievement_count=api_response["achievementCount"],
             bank_account=BankAccount.initialize_from_api_response(
@@ -68,3 +73,19 @@ class Company(BaseModel):
     @property
     def securities_account(self):
         return self.client.get_securities_account(self.securities_account_id)
+
+    def issue_bonds(
+            self,
+            face_value: float,
+            interest_rate: float,
+            maturity_date: int,
+            number_of_bonds: int
+    ):
+        return Bond.issue(
+            self.id,
+            face_value=face_value,
+            interest_rate=interest_rate,
+            maturity_date=maturity_date,
+            number_of_bonds=number_of_bonds,
+            client=self.client
+        )
