@@ -6,7 +6,6 @@ from typing import Dict
 from alpha_trader.client import Client
 from alpha_trader.listing import Listing
 from alpha_trader.bank_account import BankAccount
-from alpha_trader.bonds import Bond
 from alpha_trader.user import User
 
 
@@ -81,6 +80,8 @@ class Company(BaseModel):
             maturity_date: int,
             number_of_bonds: int
     ):
+        from alpha_trader.bonds import Bond
+
         return Bond.issue(
             self.id,
             face_value=face_value,

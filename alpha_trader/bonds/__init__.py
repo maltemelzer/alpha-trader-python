@@ -8,6 +8,7 @@ import time
 from alpha_trader.client import Client
 from alpha_trader.listing import Listing
 from alpha_trader.price.price_spread import PriceSpread
+from alpha_trader.company import Company
 
 
 class Issuer(BaseModel):
@@ -16,9 +17,10 @@ class Issuer(BaseModel):
     name: str
     security_identifier: str
     version: int
+    client: Client
 
     @staticmethod
-    def initialize_from_api_response(api_response: Dict) -> "Issuer":
+    def initialize_from_api_response(api_response: Dict, client: Client) -> "Issuer":
         # from alpha_trader.listing import Listing
 
         return Issuer(
@@ -29,7 +31,14 @@ class Issuer(BaseModel):
             name=api_response["name"],
             security_identifier=api_response["securityIdentifier"],
             version=api_response["version"],
+            client=client,
         )
+
+    @property
+    def company(self):
+        response = self.client.request("GET", f"api/companies/securityIdentifier/{self.security_identifier}")
+
+        return Company.initialize_from_api_response(response.json(), self.client)
 
 
 class Bond(BaseModel):
@@ -78,7 +87,7 @@ class Bond(BaseModel):
             id=api_response["id"],
             interest_rate=api_response["interestRate"],
             issue_date=api_response["issueDate"],
-            issuer=Issuer.initialize_from_api_response(api_response["issuer"]),
+            issuer=Issuer.initialize_from_api_response(api_response["issuer"], client=client),
             listing=Listing.initialize_from_api_response(api_response["listing"], client),
             maturity_date=api_response["maturityDate"],
             name=api_response["name"],
