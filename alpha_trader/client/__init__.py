@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Union, Dict
+from typing import Union, Dict, List
 import requests
 import os
 
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from alpha_trader.price.price_spread import PriceSpread
     from alpha_trader.user import User
     from alpha_trader.securities_account import SecuritiesAccount
+    from alpha_trader.bonds import Bond
 
 from alpha_trader.logging import logger
 
@@ -83,7 +84,7 @@ class Client(BaseModel):
         return headers
 
     def request(
-        self, method: str, endpoint: str, data: Dict = None
+            self, method: str, endpoint: str, data: Dict = None, json: Dict = None, additional_headers: Dict = None, params: Dict = None
     ) -> requests.Response:
         """Make a request using the authenticated client. This method is mainly used internally by other classes
         to retrieve more information from the API.
@@ -96,6 +97,8 @@ class Client(BaseModel):
             Malte
 
         Args:
+            body: body parameters
+            additional_headers: Additional headers to be added to the request
             method: HTTP method
             endpoint: Endpoint
             data: Data
@@ -109,8 +112,13 @@ class Client(BaseModel):
         if not self.authenticated:
             raise Exception("Client is not authenticated.")
 
+        if additional_headers is None:
+            headers = self.__get_headers()
+        else:
+            headers = self.__get_headers() | additional_headers
+
         response = requests.request(
-            method, url, data=data, headers=self.__get_headers()
+            method, url, data=data, headers=headers, params=params, json=json
         )
 
         return response
@@ -156,7 +164,7 @@ class Client(BaseModel):
         """
         from alpha_trader.listing import Listing
 
-        response = self.request("GET", f"/api/listings/{security_identifier}")
+        response = self.request("GET", f"api/listings/{security_identifier}")
 
         return Listing.initialize_from_api_response(response.json(), client=self)
 
@@ -185,3 +193,54 @@ class Client(BaseModel):
         return SecuritiesAccount.initialize_from_api_response(
             response.json(), client=self
         )
+
+    def filter_listings(self, filter_id: str = None, filter_definition: Dict = None) -> List[PriceSpread]:
+        """
+
+        Returns:
+            Price Spreads
+
+        """
+        from alpha_trader.price.price_spread import PriceSpread
+
+        if filter_definition is None:
+            filter_definition = {}
+
+        if filter_id is None:
+            params = None
+        else:
+            params = {"filterId": filter_id}
+
+        response = self.request(
+            "POST",
+            "api/v2/filter/pricespreads",
+            json=filter_definition,
+            additional_headers={"Content-Type": "application/json"},
+            params=params
+        )
+
+        return [
+            PriceSpread.initialize_from_filter_api_response(item, client=self) for item in response.json()["results"]
+        ]
+
+    def get_bond(self, security_identifier: str, price_spread: Union[PriceSpread, None] = None) -> Bond:
+        """
+            Get the bond information for a security.
+
+        Args:
+            price_spread: manually set the price spread
+            security_identifier: Security identifier
+
+        Returns:
+            Bond
+        """
+        from alpha_trader.bonds import Bond
+
+        response = self.request("GET", f"api/bonds/securityidentifier/{security_identifier}")
+
+        Bond.update_forward_refs()
+
+        return Bond.initialize_from_api_response(response.json(), client=self, price_spread=price_spread)
+
+    def get_bonds(self, page: int, search: str, page_size: int):
+        pass
