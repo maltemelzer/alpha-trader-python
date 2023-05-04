@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from alpha_trader.client import Client
 from alpha_trader.achievement import Achievement
@@ -36,8 +36,8 @@ class UserCapabilities(BaseModel):
     """
 
     partner_id: Union[str, None]
-    achievement_count: int
-    achievement_total: int
+    achievement_count: Union[None, int]
+    achievement_total: Union[None, int]
     last_sponsoring_date: Union[None, str]
     level_2_user_end_date: Union[None, str]
     locale: str
@@ -122,7 +122,7 @@ class User(BaseModel):
         )
 
     @property
-    def achievements(self):
+    def achievements(self) -> List[Achievement]:
         """
             Achievements of the user
 
@@ -189,7 +189,7 @@ class User(BaseModel):
         return Company.initialize_from_api_response(response.json(), self.client)
 
     @property
-    def companies(self) -> list[Company]:
+    def companies(self) -> List[Company]:
         """
             Get all companies that the user is CEO of
         Returns:
