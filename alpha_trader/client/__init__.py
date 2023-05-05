@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from alpha_trader.user import User
     from alpha_trader.securities_account import SecuritiesAccount
     from alpha_trader.bonds import Bond
+    from alpha_trader.company import Company
 
 from alpha_trader.logging import logger
 
@@ -241,6 +242,22 @@ class Client(BaseModel):
         Bond.update_forward_refs()
 
         return Bond.initialize_from_api_response(response.json(), client=self, price_spread=price_spread)
+
+    def get_company(self, security_identifier: str) -> Company:
+        """
+            Get the company information for a security.
+
+        Args:
+            security_identifier: Security identifier
+
+        Returns:
+            Company
+        """
+        from alpha_trader.company import Company
+
+        response = self.request("GET", f"api/companies/securityIdentifier/{security_identifier}")
+
+        return Company.initialize_from_api_response(response.json(), client=self)
 
     def get_bonds(self, page: int, search: str, page_size: int):
         pass
