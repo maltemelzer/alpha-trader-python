@@ -162,6 +162,11 @@ class Order(BaseModel):
 
         return Order.initialize_from_api_response(response.json(), client)
 
+    def update(self):
+        response = self.client.request("GET", f"api/securityorders/{self.id}")
+
+        return Order.initialize_from_api_response(response.json(), self.client)
+
     def __str__(self):
         return (
             f"{self.action} {self.number_of_shares} {self.listing.name} @ {self.price}"

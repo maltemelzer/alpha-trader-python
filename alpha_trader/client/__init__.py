@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from alpha_trader.securities_account import SecuritiesAccount
     from alpha_trader.bonds import Bond
     from alpha_trader.company import Company
+    from alpha_trader.order import Order
 
 from alpha_trader.logging import logger
 
@@ -258,6 +259,22 @@ class Client(BaseModel):
         response = self.request("GET", f"api/companies/securityIdentifier/{security_identifier}")
 
         return Company.initialize_from_api_response(response.json(), client=self)
+
+    def get_order(self, order_id: str) -> Order:
+        """
+            Get the order information for a given order ID.
+
+        Args:
+            order_id: Order ID
+
+        Returns:
+            Order
+        """
+        from alpha_trader.order import Order
+
+        response = self.request("GET", f"api/securityorders//{order_id}")
+
+        return Order.initialize_from_api_response(response.json(), client=self)
 
     def get_bonds(self, page: int, search: str, page_size: int):
         pass
