@@ -291,6 +291,8 @@ class Client(BaseModel):
         Returns:
             User
         """
+        from alpha_trader.user import User
+
         data = {
             "username": username,
             "password": password,
