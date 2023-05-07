@@ -278,3 +278,30 @@ class Client(BaseModel):
 
     def get_bonds(self, page: int, search: str, page_size: int):
         pass
+
+    def register_user(self, username: str, password: str, email: str, locale: str = None) -> User:
+        """
+            Register a new user
+        Args:
+            username: Username
+            password: Password
+            email: Email
+            locale: Locale
+
+        Returns:
+            User
+        """
+        data = {
+            "username": username,
+            "password": password,
+            "emailAddress": email,
+            "locale": locale,
+        }
+
+        response = requests.post(f"{self.base_url}/user/register", data=data)
+        if response.status_code != 201:
+            raise Exception(response.text)
+
+        self.login()
+
+        return User.initialize_from_api_response(response.json(), self)
