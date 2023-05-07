@@ -7,36 +7,36 @@ jobs:
   publish:
     strategy:
       fail-fast: false
-      matrix:
-        python-version: [3.9]
-        poetry-version: [1.4.2]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
       - name: Run image
         uses: abatilo/actions-poetry@v2.0.0
         with:
-          poetry-version: ${{ matrix.poetry-version }}
-#      - name: Python Semantic Release
-#        uses: relekang/python-semantic-release@master
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          repository_username: __token__
-#          repository_password: ${{ secrets.PYPI_TOKEN }}
-      - name: Semantic Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPOSITORY_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-          REPOSITORY_USERNAME: __token__
-        run: |
-          pip install python-semantic-release
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          poetry run semantic-release publish
+          poetry-version: 1.4.2
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Python Semantic Release
+        uses: relekang/python-semantic-release@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository_username: __token__
+          repository_password: ${{ secrets.PYPI_TOKEN }}
+#      - name: Semantic Release
+#        env:
+#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+##          REPOSITORY_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+##          REPOSITORY_USERNAME: __token__
+#        run: |
+#          pip install python-semantic-release
+#          git config user.name github-actions
+#          git config user.email github-actions@github.com
+#          poetry run semantic-release print-version --current
+#          poetry run semantic-release print-version
+##          poetry run semantic-release publish
 #      - name: Publish
 #        env:
 #          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
