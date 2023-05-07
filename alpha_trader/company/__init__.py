@@ -30,7 +30,7 @@ class Company(BaseModel):
         return Company(
             achievement_count=api_response["achievementCount"],
             bank_account=BankAccount.initialize_from_api_response(
-                api_response["bankAccount"]
+                api_response["bankAccount"], client=client
             ),
             ceo=User.initialize_from_api_response(api_response["ceo"], client),
             id=api_response["id"],

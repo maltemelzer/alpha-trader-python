@@ -39,11 +39,11 @@ class OrderCheckResult(BaseModel):
 class Order(BaseModel):
     action: str
     check_result: Union[OrderCheckResult, None]
-    committed_cash: int
+    committed_cash: float
     counter_party: Union[str, None]
     counter_party_name: Union[str, None]
     creation_date: int
-    execution_price: Union[int, None]
+    execution_price: Union[float, None]
     execution_volume: Union[int, None]
     good_after_date: Union[int, None]
     good_till_date: Union[int, None]

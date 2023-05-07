@@ -7,6 +7,7 @@ from alpha_trader.client import Client
 from alpha_trader.achievement import Achievement
 from alpha_trader.logging import logger
 from alpha_trader.securities_account import SecuritiesAccount
+from alpha_trader.bank_account import BankAccount
 
 from typing import TYPE_CHECKING
 
@@ -214,6 +215,20 @@ class User(BaseModel):
         response = self.client.request("GET", f"api/v2/possibledailysalary/{self.id}")
 
         return response.json()["value"]
+
+    @property
+    def bank_account(self) -> BankAccount:
+        """
+            Get the bank account for the user
+        Returns:
+            Bank account
+        """
+        if not self.my_user:
+            raise Exception("Cannot retrieve bank account for other users")
+
+        response = self.client.request("GET", "api/v2/my/bankaccounts/")
+
+        return BankAccount.initialize_from_api_response(response.json()[0], self.client)
 
     def retrieve_salary(self) -> None:
         """
