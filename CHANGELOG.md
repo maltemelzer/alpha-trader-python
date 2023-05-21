@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2023-05-07)
+### Fix
+* **user:** Register User, fix imports ([`11a6bec`](https://github.com/maltemelzer/alpha-trader-python/commit/11a6bec7b1e6d7b4386512ce96dea109000ac68c))
+
 ## v0.2.0 (2023-05-07)
 ### Feature
 * **user:** Register User ([`a7bbbd3`](https://github.com/maltemelzer/alpha-trader-python/commit/a7bbbd3268a7f085f07d7b38cdec439496e8716d))
