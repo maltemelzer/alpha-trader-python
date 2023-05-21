@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2023-05-21)
+### Feature
+* **company:** Add banking license and company achievements ([`d228fd3`](https://github.com/maltemelzer/alpha-trader-python/commit/d228fd3de19cc65bb013218a650843432b962d4b))
+
 ## v0.2.1 (2023-05-07)
 ### Fix
 * **user:** Register User, fix imports ([`11a6bec`](https://github.com/maltemelzer/alpha-trader-python/commit/11a6bec7b1e6d7b4386512ce96dea109000ac68c))
