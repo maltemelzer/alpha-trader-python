@@ -74,12 +74,12 @@ class Company(BaseModel):
         return self.client.get_securities_account(self.securities_account_id)
 
     def request_banking_license(self):
-        response = self.client.request("POST", "/api/bankinglicense", data={"companyId": self.id})
+        response = self.client.request("POST", "api/bankinglicense", data={"companyId": self.id})
 
         return response.status_code
 
     def claim_achievements(self):
-        response = self.client.request("PUT", "/api/v2/my/companyachievementclaim")
+        response = self.client.request("PUT", "api/v2/my/companyachievementclaim")
 
         return response.status_code
 
