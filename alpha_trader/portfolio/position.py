@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, Union
 
 from alpha_trader.listing import Listing
 from alpha_trader.price.price import Price
@@ -7,20 +7,20 @@ from alpha_trader.client import Client
 
 
 class Position(BaseModel):
-    average_buying_price: int
+    average_buying_price: float
     committed_shares: int
-    current_ask_price: int
-    current_ask_size: int
-    current_bid_price: int
-    current_bid_size: int
-    last_buying_price: int
+    current_ask_price: Union[float, None]
+    current_ask_size: Union[int, None]
+    current_bid_price: Union[float, None]
+    current_bid_size: Union[int, None]
+    last_buying_price: Union[float, None]
     last_price: Price
     last_price_update: int
     listing: Listing
     number_of_shares: int
     security_identifier: str
     type: str
-    volume: int
+    volume: float
     client: Client
 
     @staticmethod

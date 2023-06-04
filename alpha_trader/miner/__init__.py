@@ -123,3 +123,4 @@ class Miner(BaseModel):
         )
 
         return next_level_amortization_hours
+    
