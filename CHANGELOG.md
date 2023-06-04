@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.3 (2023-06-04)
+
+### Fix
+
+* **position:** Float values ([`61ec3ab`](https://github.com/maltemelzer/alpha-trader-python/commit/61ec3ab92a399f6d1e43eed959b3b9498fb6f30b))
+
 ## v0.3.2 (2023-05-21)
 ### Fix
 * **company:** Url of banking license and achievements ([`6271820`](https://github.com/maltemelzer/alpha-trader-python/commit/627182033380ca250ce5c4e1f83ce3145e516b6d))
