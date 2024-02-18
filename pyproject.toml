@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "alpha-trader-python"
-version = "0.4.2"
+version = "0.4.3"
 description = "Python SDK for https://alpha-trader.com"
 authors = ["maltemelzer"]
 license = "MIT"

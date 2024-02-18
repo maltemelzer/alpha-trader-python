@@ -2,6 +2,17 @@
 
 
 
+## v0.4.3 (2024-02-18)
+
+### Fix
+
+* fix(order): change pydantic type ([`75fe57f`](https://github.com/maltemelzer/alpha-trader-python/commit/75fe57fd8096b833dc7ebf38bf4d049c8a32a26c))
+
+### Unknown
+
+* Merge remote-tracking branch &#39;origin/main&#39; ([`98c332d`](https://github.com/maltemelzer/alpha-trader-python/commit/98c332d91bf84e22b82a49088d184489a40da980))
+
+
 ## v0.4.2 (2024-02-18)
 
 ### Fix
