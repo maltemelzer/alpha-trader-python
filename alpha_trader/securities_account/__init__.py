@@ -67,6 +67,14 @@ class SecuritiesAccount(BaseModel):
             for res in response.json()
         ]
 
+    def delete_all_orders(self):
+        response = self.client.request("DELETE", f"api/securityorders", params={"owner": self.id})
+
+        if response.status_code > 205:
+            print(response.text)
+
+        return response.status_code
+
     def order(
         self,
         action: str,
