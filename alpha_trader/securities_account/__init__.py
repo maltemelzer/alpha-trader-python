@@ -79,9 +79,9 @@ class SecuritiesAccount(BaseModel):
         self,
         action: str,
         order_type: str,
-        price: float,
         quantity: int,
         security_identifier: str,
+        price: float = None
     ) -> Order:
         """Create an order for this securities account
 

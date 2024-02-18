@@ -113,10 +113,10 @@ class Order(BaseModel):
     def create(
         action: str,
         quantity: int,
-        price: float,
         client: Client,
         owner_securities_account_id: str,
         security_identifier: str,
+        price: float = None,
         good_after_date: int = None,
         good_till_date: int = None,
         order_type: str = "LIMIT",
