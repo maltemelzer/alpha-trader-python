@@ -2,6 +2,17 @@
 
 
 
+## v0.4.2 (2024-02-18)
+
+### Fix
+
+* fix(order): allow market orders ([`a7fea72`](https://github.com/maltemelzer/alpha-trader-python/commit/a7fea72b82789a71a45dd9eb1499415c13820890))
+
+### Unknown
+
+* Merge remote-tracking branch &#39;origin/main&#39; ([`9d52790`](https://github.com/maltemelzer/alpha-trader-python/commit/9d52790ae77f55e70a477de4a35f6fa7db383d6e))
+
+
 ## v0.4.1 (2024-02-18)
 
 ### Fix
