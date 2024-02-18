@@ -2,6 +2,17 @@
 
 
 
+## v0.4.0 (2024-02-18)
+
+### Feature
+
+* feat(securities-account): Add functionality to delete all orders ([`50a8651`](https://github.com/maltemelzer/alpha-trader-python/commit/50a86510f983cf46b56ba25941b1f06437730bb5))
+
+### Unknown
+
+* Merge remote-tracking branch &#39;origin/main&#39; ([`b36a39a`](https://github.com/maltemelzer/alpha-trader-python/commit/b36a39ad626fa2becff86cf9c64456b0bd956905))
+
+
 ## v0.3.7 (2024-02-18)
 
 ### Fix
