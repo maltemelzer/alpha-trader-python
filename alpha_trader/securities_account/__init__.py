@@ -8,14 +8,14 @@ from alpha_trader.order import Order
 
 class SecuritiesAccount(BaseModel):
     """
-    Securities account model
-
+    The SecuritiesAccount model represents a securities account in the trading system.
+    
     Attributes:
-        clearing_account_id: Clearing account ID of the securities account
-        id: securities account ID
-        private_account: Flag if the securities account is private
-        version: Version of the securities account
-        client: Client of the securities account (for interaction with the API)
+        clearing_account_id (str): The ID of the clearing account associated with this securities account.
+        id (str): The unique ID of the securities account.
+        private_account (bool): A flag indicating whether the securities account is private.
+        version (int): The version of the securities account.
+        client (Client): The client associated with the securities account, used for API interactions.
     """
 
     clearing_account_id: str
@@ -43,9 +43,9 @@ class SecuritiesAccount(BaseModel):
     @property
     def portfolio(self) -> Portfolio:
         """
-            Portfolio of this securities account
+        Retrieve the portfolio of this securities account
         Returns:
-            Portfolio
+            Portfolio: The portfolio associated with this securities account
         """
         response = self.client.request("GET", f"api/portfolios/{self.id}")
 

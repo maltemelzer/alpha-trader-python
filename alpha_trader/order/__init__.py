@@ -159,6 +159,8 @@ class Order(BaseModel):
         }
 
         response = client.request("POST", "api/securityorders", data=data)
+        if response.status_code not in [200, 201]:
+            print(response.text)
 
         return Order.initialize_from_api_response(response.json(), client)
 

@@ -50,6 +50,12 @@ class Miner(BaseModel):
         )
 
     def update_from_api_response(self, api_response: Dict):
+        """
+        Update the miner's attributes from the API response.
+    
+        Args:
+            api_response (Dict): The API response containing the updated miner attributes.
+        """
         self.coins_per_hour = api_response["coinsPerHour"]
         self.id = api_response["id"]
         self.maximum_capacity = api_response["maximumCapacity"]
