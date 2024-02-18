@@ -2,6 +2,17 @@
 
 
 
+## v0.3.7 (2024-02-18)
+
+### Fix
+
+* fix(gh-action): pypi token update ([`45e0c43`](https://github.com/maltemelzer/alpha-trader-python/commit/45e0c43d57059e1d0830050e2314f45eb266dbf7))
+
+### Unknown
+
+* Merge remote-tracking branch &#39;origin/main&#39; ([`6fb7cde`](https://github.com/maltemelzer/alpha-trader-python/commit/6fb7cde4df315b0511e76613c80881b621159892))
+
+
 ## v0.3.6 (2024-02-18)
 
 ### Fix
