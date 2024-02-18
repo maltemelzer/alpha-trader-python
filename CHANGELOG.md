@@ -2,6 +2,15 @@
 
 
 
+## v0.3.6 (2024-02-18)
+
+### Fix
+
+* fix(gh-action): permissions for token ([`0c16cca`](https://github.com/maltemelzer/alpha-trader-python/commit/0c16cca9902e213bb351b4bec59dcbdc9eb29d67))
+
+* fix(gh-action): change github for release of package ([`0a6c871`](https://github.com/maltemelzer/alpha-trader-python/commit/0a6c871a1308d05f8acf1bb2141d408bf075c651))
+
+
 ## v0.3.5 (2024-02-18)
 
 ### Fix
