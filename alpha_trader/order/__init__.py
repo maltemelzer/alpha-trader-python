@@ -54,7 +54,7 @@ class Order(BaseModel):
     number_of_shares: int
     owner: str
     owner_name: str
-    price: float
+    price: Union[float, None]
     private_counter_party: Union[bool, None]
     private_owner: bool
     security_identifier: str
