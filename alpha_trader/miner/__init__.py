@@ -88,6 +88,10 @@ class Miner(BaseModel):
             API response
         """
         response = self.client.request("PUT", "api/v2/my/minerupgrade")
+        if response.status_code > 205:
+            logger.warning(f"Miner upgrade failed: {response.text}")
+            return response.json()
+
         self.update_from_api_response(response.json())
 
         logger.info(f"Miner upgraded. New coins per hour: {self.coins_per_hour}")
