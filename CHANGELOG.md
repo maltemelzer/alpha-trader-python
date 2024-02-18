@@ -2,6 +2,13 @@
 
 
 
+## v0.3.5 (2024-02-18)
+
+### Fix
+
+* fix(pyproject): fix version variable ([`0d18ac9`](https://github.com/maltemelzer/alpha-trader-python/commit/0d18ac9784da06de71b08971905752b5b0dfcec2))
+
+
 ## v0.3.4 (2024-02-18)
 
 ### Fix
