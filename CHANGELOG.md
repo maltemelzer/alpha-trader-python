@@ -2,6 +2,17 @@
 
 
 
+## v0.4.1 (2024-02-18)
+
+### Fix
+
+* fix(miner-upgrade): add logging to miner upgrade ([`f1f2ed2`](https://github.com/maltemelzer/alpha-trader-python/commit/f1f2ed2efef4766e22fb6a62e295789570bb4104))
+
+### Unknown
+
+* Merge remote-tracking branch &#39;origin/main&#39; ([`49cbef8`](https://github.com/maltemelzer/alpha-trader-python/commit/49cbef87c709d35922752d1616ec8290b8f51748))
+
+
 ## v0.4.0 (2024-02-18)
 
 ### Feature
