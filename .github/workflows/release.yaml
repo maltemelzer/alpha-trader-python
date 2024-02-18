@@ -9,6 +9,8 @@ jobs:
     concurrency: release
     permissions:
       id-token: write
+      packages: write
+      contents: write
 
     steps:
       - uses: actions/checkout@v3
