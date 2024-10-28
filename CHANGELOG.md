@@ -2,6 +2,17 @@
 
 
 
+## v0.5.0 (2024-10-28)
+
+### Feature
+
+* feat: upgrade pydantic version ([`2756243`](https://github.com/maltemelzer/alpha-trader-python/commit/275624399c8c55451dbbc592531975c16d0289b6))
+
+### Fix
+
+* fix: formatting error in pyproject.toml ([`7e5bb02`](https://github.com/maltemelzer/alpha-trader-python/commit/7e5bb02274437265089e4c261cfe635a0af7f08b))
+
+
 ## v0.4.3 (2024-02-18)
 
 ### Fix
