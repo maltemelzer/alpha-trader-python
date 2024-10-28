@@ -23,13 +23,13 @@ class Miner(BaseModel):
         client: Client of the miner (for interaction with the API)
     """
 
-    coins_per_hour: int
+    coins_per_hour: float
     id: str
-    maximum_capacity: int
-    next_level_coins_per_hour: int
-    next_level_costs: int
+    maximum_capacity: float
+    next_level_coins_per_hour: float
+    next_level_costs: float
     owner: Owner
-    storage: int
+    storage: float
     transferable_coins: int
     version: int
     client: Client
