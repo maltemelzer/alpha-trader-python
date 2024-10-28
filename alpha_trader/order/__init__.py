@@ -38,32 +38,32 @@ class OrderCheckResult(BaseModel):
 
 class Order(BaseModel):
     action: str
-    check_result: Union[OrderCheckResult, None]
+    check_result: Union[OrderCheckResult, None] = None
     committed_cash: float
-    counter_party: Union[str, None]
-    counter_party_name: Union[str, None]
+    counter_party: Union[str, None] = None
+    counter_party_name: Union[str, None] = None
     creation_date: int
-    execution_price: Union[float, None]
-    execution_volume: Union[float, None]
-    good_after_date: Union[int, None]
-    good_till_date: Union[int, None]
-    hourly_change: Union[int, None]
+    execution_price: Union[float, None] = None
+    execution_volume: Union[float, None] = None
+    good_after_date: Union[int, None] = None
+    good_till_date: Union[int, None] = None
+    hourly_change: Union[int, None] = None
     id: str
     listing: Listing
-    next_hourly_change_date: Union[int, None]
+    next_hourly_change_date: Union[int, None] = None
     number_of_shares: int
     owner: str
     owner_name: str
-    price: Union[float, None]
-    private_counter_party: Union[bool, None]
+    price: Union[float, None] = None
+    private_counter_party: Union[bool, None] = None
     private_owner: bool
     security_identifier: str
-    spread: Union[PriceSpread, None]
+    spread: Union[PriceSpread, None] = None
     type: str
-    uncommitted_cash: Union[float, None]
+    uncommitted_cash: Union[float, None] = None
     uncommitted_shares: int
-    version: Union[int, None]
-    volume: Union[float, None]
+    version: Union[int, None] = None
+    volume: Union[float, None] = None
     client: Client
 
     @staticmethod
