@@ -3,7 +3,7 @@ from typing import Dict
 
 
 class Price(BaseModel):
-    value: int
+    value: float
     date: int
 
     @staticmethod
