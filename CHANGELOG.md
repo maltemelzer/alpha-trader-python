@@ -2,6 +2,13 @@
 
 
 
+## v0.5.3 (2024-10-28)
+
+### Fix
+
+* fix: float attributes ([`593c914`](https://github.com/maltemelzer/alpha-trader-python/commit/593c91457638d31983d8bb97fbd0d7573a66253c))
+
+
 ## v0.5.2 (2024-10-28)
 
 ### Fix
