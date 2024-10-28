@@ -2,6 +2,13 @@
 
 
 
+## v0.5.5 (2024-10-28)
+
+### Fix
+
+* fix: defaults for optional arguments ([`3dc75a4`](https://github.com/maltemelzer/alpha-trader-python/commit/3dc75a41f951e6cfb3aeaa28f6b47139a379fd45))
+
+
 ## v0.5.4 (2024-10-28)
 
 ### Fix
