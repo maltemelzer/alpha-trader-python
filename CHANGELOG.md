@@ -2,6 +2,13 @@
 
 
 
+## v0.5.2 (2024-10-28)
+
+### Fix
+
+* fix: price attributes are floats ([`ab195ad`](https://github.com/maltemelzer/alpha-trader-python/commit/ab195ad1ebbc0e2747904173994f36b8edcaf3f6))
+
+
 ## v0.5.1 (2024-10-28)
 
 ### Fix
