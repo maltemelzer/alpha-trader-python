@@ -2,6 +2,13 @@
 
 
 
+## v0.5.1 (2024-10-28)
+
+### Fix
+
+* fix: miner attributes are floats ([`7aeccc1`](https://github.com/maltemelzer/alpha-trader-python/commit/7aeccc12e10e224aafbcb2d037000dce107f3206))
+
+
 ## v0.5.0 (2024-10-28)
 
 ### Feature
