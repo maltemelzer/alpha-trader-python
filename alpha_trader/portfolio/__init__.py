@@ -17,8 +17,8 @@ class Portfolio(BaseModel):
         client: Client of the portfolio (for interaction with the API)
     """
 
-    cash: int
-    committed_cash: int
+    cash: float
+    committed_cash: float
     positions: Union[List[Position], None]
     securities_account_id: str
     client: Client
