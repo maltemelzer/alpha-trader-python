@@ -17,7 +17,7 @@ class Position(BaseModel):
     last_price: Price
     last_price_update: int
     listing: Listing
-    number_of_shares: int
+    number_of_shares: float
     security_identifier: str
     type: str
     volume: float

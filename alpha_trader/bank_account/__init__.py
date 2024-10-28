@@ -5,7 +5,7 @@ from alpha_trader.client import Client
 
 
 class BankAccount(BaseModel):
-    cash: int
+    cash: float
     id: str
     version: int
     client: Client

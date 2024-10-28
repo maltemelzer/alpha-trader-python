@@ -17,7 +17,7 @@ class Message(BaseModel):
 
 
 class CashTransferLog(BaseModel):
-    amount: int
+    amount: float
     date: int
     id: str
     message: Message

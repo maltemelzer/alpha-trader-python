@@ -6,7 +6,7 @@ from alpha_trader.client import Client
 
 class Employment(BaseModel):
     company: Company
-    daily_wage: int
+    daily_wage: float
     id: str
     pay_automatically: bool
     start_date: int

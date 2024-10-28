@@ -60,9 +60,9 @@ class Bond(BaseModel):
             volume: Volume
             client: Client for interacting with the API.
     """
-    face_value: int
+    face_value: float
     id: str
-    interest_rate: int
+    interest_rate: float
     issue_date: int
     issuer: Issuer
     listing: Listing
@@ -71,7 +71,7 @@ class Bond(BaseModel):
     price_spread: Union[PriceSpread]
     repurchase_listing: Listing
     version: int
-    volume: int
+    volume: float
     client: Client
 
     @staticmethod
