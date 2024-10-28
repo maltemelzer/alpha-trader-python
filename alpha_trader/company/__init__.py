@@ -83,6 +83,14 @@ class Company(BaseModel):
 
         return response
 
+    def initiate_liquidation_poll(self):
+        response = self.client.request("POST", "api/v2/liquidationpolls", data={"companyId": self.id})
+
+        return response
+
+    def cashout(self):
+        pass
+
     def issue_bonds(
             self,
             face_value: float,

@@ -8,9 +8,9 @@ readme = "README.md"
 packages = [{include = "alpha_trader"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9"
 requests = "^2.29.0"
-pydantic = "^1.10.7"
+pydantic = ">=2.9.2""
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
