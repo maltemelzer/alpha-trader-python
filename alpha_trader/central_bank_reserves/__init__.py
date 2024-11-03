@@ -50,7 +50,7 @@ class CentralBankReserves(BaseModel):
         )
 
     def increase(self, amount: float):
-        response = self.client.request("POST", f"api/centralbankreserves?companyId={self.banking_license.company_id}&cashAmount={amount}")
+        response = self.client.request("PUT", f"api/centralbankreserves?companyId={self.banking_license.company_id}&cashAmount={amount}")
 
         if response.status_code != 200:
             raise Exception(response.json())
@@ -64,7 +64,7 @@ class CentralBankReserves(BaseModel):
         return self.coins_for_next_boost * multiplier
 
     def boost(self, multiplier: int = 200):
-        response = self.client.request("POST", f"api/v2/centralbankreserves/{self.id}?increaseInterestRateBoost=true&multiplier={multiplier}")
+        response = self.client.request("PUT", f"api/v2/centralbankreserves/{self.id}?increaseInterestRateBoost=true&multiplier={multiplier}")
 
         if response.status_code != 200:
             raise Exception(response.json())
