@@ -73,6 +73,14 @@ class Company(BaseModel):
     def securities_account(self):
         return self.client.get_securities_account(self.securities_account_id)
 
+    @property
+    def central_bank_reserves(self):
+        from alpha_trader.central_bank_reserves import CentralBankReserves
+
+        response = self.client.request("GET", f"api/centralbankreserves?companyId={self.id}")
+
+        return CentralBankReserves.initialize_from_api_response(response.json(), self.client)
+
     def request_banking_license(self):
         response = self.client.request("POST", "api/bankinglicense", data={"companyId": self.id})
 
