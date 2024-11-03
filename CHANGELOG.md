@@ -2,6 +2,13 @@
 
 
 
+## v0.6.0 (2024-11-03)
+
+### Feature
+
+* feat: add functionality for central bank management ([`2d760f7`](https://github.com/maltemelzer/alpha-trader-python/commit/2d760f7b01b0ce656584a7b5166c773bf8804491))
+
+
 ## v0.5.5 (2024-10-28)
 
 ### Fix
