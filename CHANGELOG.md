@@ -2,6 +2,13 @@
 
 
 
+## v0.6.1 (2024-11-03)
+
+### Fix
+
+* fix: add client to central bank reserves ([`9a9409e`](https://github.com/maltemelzer/alpha-trader-python/commit/9a9409e2b25cbcbbfe5ee69997a23c5c60978666))
+
+
 ## v0.6.0 (2024-11-03)
 
 ### Feature
