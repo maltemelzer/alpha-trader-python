@@ -27,6 +27,7 @@ class BankingLicense(BaseModel):
 
 
 class CentralBankReserves(BaseModel):
+    client: Client
     banking_license: BankingLicense
     cash_holding: float
     coins_for_next_boost: int
@@ -38,6 +39,7 @@ class CentralBankReserves(BaseModel):
     @staticmethod
     def initialize_from_api_response(api_response: dict, client: Client):
         return CentralBankReserves(
+            client=client,
             banking_license=BankingLicense.initialize_from_api_response(api_response["bankingLicense"], client),
             cash_holding=api_response["cashHolding"],
             coins_for_next_boost=api_response["coinsForNextBoost"],
