@@ -2,6 +2,13 @@
 
 
 
+## v0.6.2 (2024-11-03)
+
+### Fix
+
+* fix: method for increasing central bank reserves ([`126dac1`](https://github.com/maltemelzer/alpha-trader-python/commit/126dac1b0fd18f4aacb8ee5ecbddc1139cc172aa))
+
+
 ## v0.6.1 (2024-11-03)
 
 ### Fix
