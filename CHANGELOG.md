@@ -2,6 +2,13 @@
 
 
 
+## v0.6.3 (2024-11-04)
+
+### Fix
+
+* fix: add possibility to create an order from a securities account with counterparty ([`4116016`](https://github.com/maltemelzer/alpha-trader-python/commit/4116016b8b4850d754e314c1c79de3fc33aaaa81))
+
+
 ## v0.6.2 (2024-11-03)
 
 ### Fix
