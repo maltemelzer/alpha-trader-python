@@ -81,7 +81,8 @@ class SecuritiesAccount(BaseModel):
         order_type: str,
         quantity: int,
         security_identifier: str,
-        price: float = None
+        price: float = None,
+        counter_party: str | None = None
     ) -> Order:
         """Create an order for this securities account
 
@@ -91,6 +92,7 @@ class SecuritiesAccount(BaseModel):
             price: price of the order
             quantity: number of shares
             security_identifier: security identifier of the order
+            counter_party: security account id of the counterparty
 
         Returns:
             Order
@@ -103,4 +105,5 @@ class SecuritiesAccount(BaseModel):
             security_identifier=security_identifier,
             client=self.client,
             owner_securities_account_id=self.id,
+            counter_party=counter_party
         )
