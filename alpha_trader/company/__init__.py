@@ -97,7 +97,16 @@ class Company(BaseModel):
         return response
 
     def cashout(self):
-        pass
+        """Initiates a cashout poll for the company.
+
+        Returns:
+            Poll object representing the cashout poll
+        """
+        from alpha_trader.poll import Poll
+
+        response = self.client.request("POST", "api/v2/cashoutpolls", data={"companyId": self.id})
+
+        return Poll.initialize_from_api_response(response.json())
 
     def issue_bonds(
             self,
