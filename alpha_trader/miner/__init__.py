@@ -35,7 +35,16 @@ class Miner(BaseModel):
     client: Client
 
     @staticmethod
-    def from_api_response(api_response: Dict, client: Client):
+    def from_api_response(api_response: Dict, client: Client) -> "Miner":
+        """Create a Miner instance from an API response.
+
+        Args:
+            api_response: Dictionary containing the API response data
+            client: API client instance
+
+        Returns:
+            Miner instance
+        """
         return Miner(
             coins_per_hour=api_response["coinsPerHour"],
             id=api_response["id"],
@@ -48,6 +57,9 @@ class Miner(BaseModel):
             version=api_response["version"],
             client=client,
         )
+
+    # Alias for consistency with other models
+    initialize_from_api_response = from_api_response
 
     def update_from_api_response(self, api_response: Dict):
         """
