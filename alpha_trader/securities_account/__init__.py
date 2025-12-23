@@ -1,9 +1,11 @@
 from pydantic import BaseModel
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from alpha_trader.client import Client
 from alpha_trader.portfolio import Portfolio
 from alpha_trader.order import Order
+from alpha_trader.exceptions import APIError
+from alpha_trader.logging import logger
 
 
 class SecuritiesAccount(BaseModel):
@@ -67,13 +69,34 @@ class SecuritiesAccount(BaseModel):
             for res in response.json()
         ]
 
-    def delete_all_orders(self):
-        response = self.client.request("DELETE", f"api/securityorders", params={"owner": self.id})
+    def delete_all_orders(self) -> bool:
+        """Delete all orders for this securities account.
+
+        Returns:
+            True if all orders were successfully deleted
+
+        Raises:
+            APIError: If the deletion fails
+        """
+        response = self.client.request(
+            "DELETE", "api/securityorders", params={"owner": self.id}, raise_for_status=False
+        )
 
         if response.status_code > 205:
-            print(response.text)
+            try:
+                error_data = response.json()
+                message = error_data.get("message", response.text)
+            except ValueError:
+                message = response.text
+            logger.error(f"Failed to delete orders: {message}")
+            raise APIError(
+                message,
+                status_code=response.status_code,
+                endpoint="api/securityorders",
+            )
 
-        return response.status_code
+        logger.info(f"Deleted all orders for account {self.id}")
+        return True
 
     def order(
         self,
@@ -81,21 +104,24 @@ class SecuritiesAccount(BaseModel):
         order_type: str,
         quantity: int,
         security_identifier: str,
-        price: float = None,
-        counter_party: str | None = None
+        price: Optional[float] = None,
+        counter_party: Optional[str] = None,
     ) -> Order:
-        """Create an order for this securities account
+        """Create an order for this securities account.
 
         Args:
-            action: action of the order "BUY" or "SELL"
-            order_type: order type "LIMIT" or "MARKET"
-            price: price of the order
-            quantity: number of shares
-            security_identifier: security identifier of the order
-            counter_party: security account id of the counterparty
+            action: Action of the order "BUY" or "SELL"
+            order_type: Order type "LIMIT" or "MARKET"
+            price: Price of the order
+            quantity: Number of shares
+            security_identifier: Security identifier of the order
+            counter_party: Security account id of the counterparty
 
         Returns:
             Order
+
+        Raises:
+            OrderError: If the order creation fails
         """
         return Order.create(
             action=action,
@@ -105,5 +131,5 @@ class SecuritiesAccount(BaseModel):
             security_identifier=security_identifier,
             client=self.client,
             owner_securities_account_id=self.id,
-            counter_party=counter_party
+            counter_party=counter_party,
         )
