@@ -16,6 +16,14 @@ if TYPE_CHECKING:
     from alpha_trader.bonds import Bond
     from alpha_trader.company import Company
     from alpha_trader.order import Order
+    from alpha_trader.trade_stats import TradeStats, TradeSummary, Trade
+    from alpha_trader.order_log import OrderLogEntry
+    from alpha_trader.highscore import UserHighscoreEntry, CompanyHighscoreEntry, AllianceHighscoreEntry
+    from alpha_trader.index import Index, CompactIndex
+    from alpha_trader.warrant import Warrant
+    from alpha_trader.historical_data import HistorizedCompanyData, HistorizedListingData
+    from alpha_trader.notification import Notification
+    from alpha_trader.system_bond import SystemBond
 
 from alpha_trader.logging import logger
 from alpha_trader.exceptions import (
@@ -428,3 +436,360 @@ class Client(BaseModel):
         self.login()
 
         return User.initialize_from_api_response(response.json(), self)
+
+    # Trade Statistics
+
+    @property
+    def trade_stats(self) -> "TradeStats":
+        """
+        Get trade statistics accessor for analyzing trading performance.
+
+        Returns:
+            TradeStats instance for accessing trade statistics
+
+        Example:
+            >>> summary = client.trade_stats.get_summary()
+            >>> print(f"Win rate: {summary.win_rate:.2%}")
+            >>> best_trade = client.trade_stats.get_best_trade()
+        """
+        from alpha_trader.trade_stats import TradeStats
+        return TradeStats(self)
+
+    # Order Logs
+
+    def get_order_logs(
+        self,
+        securities_account_id: str = None,
+        search: str = None,
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["OrderLogEntry"]:
+        """
+        Get security order logs (trade history).
+
+        Args:
+            securities_account_id: Optional securities account ID to filter by
+            search: Optional search string
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order (e.g., "date,desc")
+
+        Returns:
+            List of order log entries
+        """
+        from alpha_trader.order_log import get_order_logs
+        return get_order_logs(self, securities_account_id, search, page, size, sort)
+
+    def get_order_logs_by_security(
+        self,
+        security_identifier: str,
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["OrderLogEntry"]:
+        """
+        Get security order logs for a specific security.
+
+        Args:
+            security_identifier: Security identifier (ASIN)
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order (e.g., "date,desc")
+
+        Returns:
+            List of order log entries for the security
+        """
+        from alpha_trader.order_log import get_order_logs_by_security
+        return get_order_logs_by_security(self, security_identifier, page, size, sort)
+
+    # Highscores
+
+    def get_user_highscores(
+        self,
+        highscore_type: str = "NETWORTH",
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["UserHighscoreEntry"]:
+        """
+        Get user highscore leaderboard.
+
+        Args:
+            highscore_type: Type of highscore (NETWORTH, BOOK_VALUE, CASH, etc.)
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order
+
+        Returns:
+            List of user highscore entries
+        """
+        from alpha_trader.highscore import get_user_highscores
+        return get_user_highscores(self, highscore_type, page, size, sort)
+
+    def get_company_highscores(
+        self,
+        highscore_type: str = "BOOK_VALUE",
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["CompanyHighscoreEntry"]:
+        """
+        Get company highscore leaderboard.
+
+        Args:
+            highscore_type: Type of highscore (BOOK_VALUE, CASH, etc.)
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order
+
+        Returns:
+            List of company highscore entries
+        """
+        from alpha_trader.highscore import get_company_highscores
+        return get_company_highscores(self, highscore_type, page, size, sort)
+
+    def get_alliance_highscores(
+        self,
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["AllianceHighscoreEntry"]:
+        """
+        Get alliance highscore leaderboard.
+
+        Args:
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order
+
+        Returns:
+            List of alliance highscore entries
+        """
+        from alpha_trader.highscore import get_alliance_highscores
+        return get_alliance_highscores(self, page, size, sort)
+
+    # Indexes
+
+    def get_indexes(
+        self,
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["CompactIndex"]:
+        """
+        Get list of all market indexes.
+
+        Args:
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order
+
+        Returns:
+            List of compact index views
+        """
+        from alpha_trader.index import get_indexes
+        return get_indexes(self, page, size, sort)
+
+    def get_index(self, security_identifier: str) -> "Index":
+        """
+        Get detailed index information including members.
+
+        Args:
+            security_identifier: Index security identifier
+
+        Returns:
+            Full index with members
+        """
+        from alpha_trader.index import get_index
+        return get_index(self, security_identifier)
+
+    # Warrants
+
+    def get_warrants(
+        self,
+        underlying_asin: str = None,
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["Warrant"]:
+        """
+        Get list of warrants.
+
+        Args:
+            underlying_asin: Optional filter by underlying security identifier
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order
+
+        Returns:
+            List of warrants
+        """
+        from alpha_trader.warrant import get_warrants
+        return get_warrants(self, underlying_asin, page, size, sort)
+
+    def get_warrant(self, warrant_id: str) -> "Warrant":
+        """
+        Get warrant by ID.
+
+        Args:
+            warrant_id: Warrant ID
+
+        Returns:
+            Warrant details
+        """
+        from alpha_trader.warrant import get_warrant
+        return get_warrant(self, warrant_id)
+
+    # Historical Data
+
+    def get_company_history(
+        self,
+        security_identifier: str,
+        page: int = 0,
+        size: int = 100,
+        sort: str = None,
+    ) -> List["HistorizedCompanyData"]:
+        """
+        Get historical company data.
+
+        Args:
+            security_identifier: Security identifier (ASIN)
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order (e.g., "date,desc")
+
+        Returns:
+            List of historical company data points
+        """
+        from alpha_trader.historical_data import get_company_history
+        return get_company_history(self, security_identifier, page, size, sort)
+
+    def get_listing_history(
+        self,
+        security_identifier: str,
+        page: int = 0,
+        size: int = 100,
+        sort: str = None,
+    ) -> List["HistorizedListingData"]:
+        """
+        Get historical listing (price) data - OHLC data.
+
+        Args:
+            security_identifier: Security identifier (ASIN)
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order (e.g., "date,desc")
+
+        Returns:
+            List of historical listing data points (OHLC)
+        """
+        from alpha_trader.historical_data import get_listing_history
+        return get_listing_history(self, security_identifier, page, size, sort)
+
+    # Notifications
+
+    def get_notifications(
+        self,
+        is_read: bool = None,
+        search: str = None,
+        page: int = 0,
+        size: int = 20,
+        sort: str = None,
+    ) -> List["Notification"]:
+        """
+        Get user notifications.
+
+        Args:
+            is_read: Filter by read status (None for all)
+            search: Optional search string
+            page: Page number (0-indexed)
+            size: Page size
+            sort: Sort order (e.g., "date,desc")
+
+        Returns:
+            List of notifications
+        """
+        from alpha_trader.notification import get_notifications
+        return get_notifications(self, is_read, search, page, size, sort)
+
+    def get_unread_notification_count(self) -> int:
+        """
+        Get count of unread notifications.
+
+        Returns:
+            Number of unread notifications
+        """
+        from alpha_trader.notification import get_unread_count
+        return get_unread_count(self)
+
+    def mark_all_notifications_as_read(self, search: str = None) -> bool:
+        """
+        Mark all notifications as read.
+
+        Args:
+            search: Optional search filter to limit which notifications are marked
+
+        Returns:
+            True if successful
+        """
+        from alpha_trader.notification import mark_all_as_read
+        return mark_all_as_read(self, search)
+
+    # System Bonds
+
+    def get_system_bonds(self) -> List["SystemBond"]:
+        """
+        Get all system bonds.
+
+        Returns:
+            List of system bonds
+        """
+        from alpha_trader.system_bond import get_system_bonds
+        return get_system_bonds(self)
+
+    def get_system_bond(self, bond_id: str) -> "SystemBond":
+        """
+        Get system bond by ID.
+
+        Args:
+            bond_id: Bond ID
+
+        Returns:
+            System bond details
+        """
+        from alpha_trader.system_bond import get_system_bond
+        return get_system_bond(self, bond_id)
+
+    def get_system_bond_by_security(self, security_identifier: str) -> "SystemBond":
+        """
+        Get system bond by security identifier.
+
+        Args:
+            security_identifier: Security identifier
+
+        Returns:
+            System bond details
+        """
+        from alpha_trader.system_bond import get_system_bond_by_security
+        return get_system_bond_by_security(self, security_identifier)
+
+    def get_main_interest_rate(self) -> float:
+        """
+        Get the current main interest rate.
+
+        Returns:
+            Current main interest rate
+        """
+        from alpha_trader.system_bond import get_main_interest_rate
+        return get_main_interest_rate(self)
+
+    def get_average_bond_interest_rate(self) -> float:
+        """
+        Get the average bond interest rate.
+
+        Returns:
+            Average bond interest rate
+        """
+        from alpha_trader.system_bond import get_average_bond_interest_rate
+        return get_average_bond_interest_rate(self)
