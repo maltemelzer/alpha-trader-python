@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
 from enum import Enum
 
 if TYPE_CHECKING:
@@ -44,7 +44,7 @@ class Warrant(BaseModel):
     company_id: str
     company_name: str
     version: int
-    client: Optional["Client"] = None
+    client: Optional[Any] = None
 
     model_config = {"arbitrary_types_allowed": True}
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from alpha_trader.client import Client
@@ -94,7 +94,7 @@ class Index(BaseModel):
     owner_id: str
     owner_username: str
     security_identifier: str
-    client: Optional["Client"] = None
+    client: Optional[Any] = None
 
     model_config = {"arbitrary_types_allowed": True}
 
