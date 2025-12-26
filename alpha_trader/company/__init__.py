@@ -11,7 +11,6 @@ from alpha_trader.user import User
 
 class Company(BaseModel):
     achievement_count: int
-    achievement_count: int
     bank_account: BankAccount
     ceo: User
     id: str
