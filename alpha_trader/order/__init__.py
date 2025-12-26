@@ -1,128 +1,71 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Dict, List, Optional
+from pydantic import BaseModel
+from typing import Dict, List, Optional, Union
 
 from alpha_trader.client import Client
 from alpha_trader.price.price_spread import PriceSpread
 from alpha_trader.listing import Listing
+from alpha_trader.exceptions import OrderError
 from alpha_trader.logging import logger
 
 
 class Message(BaseModel):
-    """Message model for order check results.
-
-    Attributes:
-        filled_string: The filled message string with substitutions applied
-        message: The message template
-        substitutions: List of values to substitute into the message
-    """
-
-    model_config = ConfigDict(populate_by_name=True)
-
-    filled_string: str = Field(alias="filledString")
+    filledString: str
     message: str
     substitutions: List[str]
 
     @staticmethod
-    def initialize_from_api_response(api_response: Dict) -> "Message":
-        """Create a Message instance from an API response."""
+    def initialize_from_api_response(api_response: Dict):
         return Message(
-            filled_string=api_response["filledString"],
+            filledString=api_response["filledString"],
             message=api_response["message"],
             substitutions=api_response["substitutions"],
         )
 
 
 class OrderCheckResult(BaseModel):
-    """Result of an order validation check.
-
-    Attributes:
-        failed: Whether the check failed
-        msg: The message describing the result
-        ok: Whether the order is OK to proceed
-        concerning_params: List of parameter names that caused issues
-    """
-
-    model_config = ConfigDict(populate_by_name=True)
-
     failed: bool
     msg: Message
     ok: bool
-    concerning_params: List[str] = Field(alias="concerningParams")
+    concerningParams: List[str]
 
     @staticmethod
-    def initialize_from_api_response(api_response: Dict) -> "OrderCheckResult":
-        """Create an OrderCheckResult instance from an API response."""
+    def initialize_from_api_response(api_response: Dict):
         return OrderCheckResult(
             failed=api_response["failed"],
             msg=Message.initialize_from_api_response(api_response["msg"]),
             ok=api_response["ok"],
-            concerning_params=api_response["concerningParams"],
+            concerningParams=api_response["concerningParams"],
         )
 
 
 class Order(BaseModel):
-    """Security order model.
-
-    Represents a buy or sell order for securities in the trading system.
-
-    Attributes:
-        action: Order action - "BUY" or "SELL"
-        check_result: Result of order validation check (if performed)
-        committed_cash: Cash committed to this order
-        counter_party: ID of the counterparty (for private orders)
-        counter_party_name: Name of the counterparty
-        creation_date: Timestamp when the order was created
-        execution_price: Price at which the order was executed
-        execution_volume: Volume that was executed
-        good_after_date: Order becomes active after this date
-        good_till_date: Order expires after this date
-        hourly_change: Hourly price change for the order
-        id: Unique identifier of the order
-        listing: Listing information for the security
-        next_hourly_change_date: Next scheduled hourly change date
-        number_of_shares: Number of shares in the order
-        owner: ID of the order owner
-        owner_name: Name of the order owner
-        price: Order price (for limit orders)
-        private_counter_party: Whether the counterparty is private
-        private_owner: Whether the owner is private
-        security_identifier: Identifier of the security
-        spread: Current price spread for the security
-        type: Order type - "LIMIT" or "MARKET"
-        uncommitted_cash: Uncommitted cash
-        uncommitted_shares: Uncommitted shares
-        version: Version for optimistic locking
-        volume: Total order volume
-        client: API client for making requests
-    """
-
     action: str
-    check_result: Optional[OrderCheckResult] = None
+    check_result: Union[OrderCheckResult, None] = None
     committed_cash: float
-    counter_party: Optional[str] = None
-    counter_party_name: Optional[str] = None
+    counter_party: Union[str, None] = None
+    counter_party_name: Union[str, None] = None
     creation_date: int
-    execution_price: Optional[float] = None
-    execution_volume: Optional[float] = None
-    good_after_date: Optional[int] = None
-    good_till_date: Optional[int] = None
-    hourly_change: Optional[int] = None
+    execution_price: Union[float, None] = None
+    execution_volume: Union[float, None] = None
+    good_after_date: Union[int, None] = None
+    good_till_date: Union[int, None] = None
+    hourly_change: Union[int, None] = None
     id: str
     listing: Listing
-    next_hourly_change_date: Optional[int] = None
+    next_hourly_change_date: Union[int, None] = None
     number_of_shares: int
     owner: str
     owner_name: str
-    price: Optional[float] = None
-    private_counter_party: Optional[bool] = None
+    price: Union[float, None] = None
+    private_counter_party: Union[bool, None] = None
     private_owner: bool
     security_identifier: str
-    spread: Optional[PriceSpread] = None
+    spread: Union[PriceSpread, None] = None
     type: str
-    uncommitted_cash: Optional[float] = None
+    uncommitted_cash: Union[float, None] = None
     uncommitted_shares: int
-    version: Optional[int] = None
-    volume: Optional[float] = None
+    version: Union[int, None] = None
+    volume: Union[float, None] = None
     client: Client
 
     @staticmethod
@@ -183,27 +126,27 @@ class Order(BaseModel):
         hourly_change: Optional[float] = None,
         check_order_only: bool = False,
     ) -> "Order":
-        """Create a new order.
+        """Creates a new order.
 
         Args:
-            action: Security order action - "BUY" or "SELL"
-            quantity: Number of shares to buy or sell
             client: Alpha Trader Client
+            action: Security Order Action, either "BUY" or "SELL"
+            quantity: Number of shares to buy or sell
+            price: Price
+            good_after_date: Valid from date (premium feature)
+            good_till_date: Valid until date (premium feature)
+            order_type: Security Order Type, either "LIMIT" or "MARKET"
+            counter_party: Securities Account ID of the counterparty
             owner_securities_account_id: Securities Account ID of the owner
-            security_identifier: Security identifier
-            price: Limit price (required for LIMIT orders)
-            good_after_date: Order becomes active after this date (premium feature)
-            good_till_date: Order expires after this date (premium feature)
-            order_type: Order type - "LIMIT" or "MARKET"
-            counter_party: Securities Account ID of the counterparty (for private orders)
-            hourly_change: Hourly price change for the order
-            check_order_only: If True, only validate the order without creating it
+            security_identifier: Security Identifier
+            hourly_change: Hourly change of the order
+            check_order_only: Only check the order, do not create it
 
         Returns:
-            The created Order
+            Order
 
         Raises:
-            Exception: If order creation fails
+            OrderError: If order creation fails or check fails
         """
         data = {
             "action": action,
@@ -219,10 +162,21 @@ class Order(BaseModel):
             "hourlyChange": hourly_change,
         }
 
-        response = client.request("POST", "api/securityorders", data=data)
+        # Use raise_for_status=False to handle order-specific errors
+        response = client.request(
+            "POST", "api/securityorders", data=data, raise_for_status=False
+        )
+
         if response.status_code not in [200, 201]:
-            logger.error(f"Order creation failed: {response.text}")
-            raise Exception(f"Order creation failed: {response.text}")
+            try:
+                error_data = response.json()
+                message = error_data.get("message", response.text)
+                check_result = error_data.get("checkResult")
+            except ValueError:
+                message = response.text
+                check_result = None
+            logger.error(f"Order creation failed: {message}")
+            raise OrderError(message, check_result=check_result)
 
         order = Order.initialize_from_api_response(response.json(), client)
         logger.info(f"Order created: {order}")

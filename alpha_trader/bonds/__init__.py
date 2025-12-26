@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Dict, TYPE_CHECKING, Union
+from typing import Dict, Optional, TYPE_CHECKING, Union
 import time
 
 # if TYPE_CHECKING:
@@ -9,6 +9,7 @@ from alpha_trader.client import Client
 from alpha_trader.listing import Listing
 from alpha_trader.price.price_spread import PriceSpread
 from alpha_trader.company import Company
+from alpha_trader.logging import logger
 
 
 class Issuer(BaseModel):
@@ -105,32 +106,37 @@ class Bond(BaseModel):
         interest_rate: float,
         maturity_date: int,
         number_of_bonds: int,
-        client: Client
+        client: Client,
     ) -> "Bond":
-        """
-            Issue new bonds
+        """Issue new bonds.
+
         Args:
             client: API Client
             company_id: ID of the company
-            face_value: face value of the bond
-            interest_rate: interest rate
-            maturity_date: maturity date
-            number_of_bonds: quantity of bonds to issue
+            face_value: Face value of the bond
+            interest_rate: Interest rate
+            maturity_date: Maturity date
+            number_of_bonds: Quantity of bonds to issue
 
         Returns:
             Bond
+
+        Raises:
+            APIError: If bond issuance fails
         """
         data = {
             "companyId": company_id,
             "faceValue": face_value,
             "interestRate": interest_rate,
             "maturityDate": maturity_date,
-            "numberOfBonds": number_of_bonds
+            "numberOfBonds": number_of_bonds,
         }
         response = client.request("POST", "api/bonds", data=data)
-        print(response.text)
 
-        return Bond.initialize_from_api_response(response.json(), client)
+        bond = Bond.initialize_from_api_response(response.json(), client)
+        logger.info(f"Issued bond: {bond.name}")
+
+        return bond
 
     def __str__(self):
         return f"Bond(name={self.name}, volume={self.volume}, price_spread={self.price_spread}) "
