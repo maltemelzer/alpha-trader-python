@@ -1,9 +1,11 @@
 from pydantic import BaseModel
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from alpha_trader.client import Client
 from alpha_trader.price.price_spread import PriceSpread
 from alpha_trader.listing import Listing
+from alpha_trader.exceptions import OrderError
+from alpha_trader.logging import logger
 
 
 class Message(BaseModel):
@@ -116,12 +118,12 @@ class Order(BaseModel):
         client: Client,
         owner_securities_account_id: str,
         security_identifier: str,
-        price: float = None,
-        good_after_date: int = None,
-        good_till_date: int = None,
+        price: Optional[float] = None,
+        good_after_date: Optional[int] = None,
+        good_till_date: Optional[int] = None,
         order_type: str = "LIMIT",
-        counter_party: str = None,
-        hourly_change: float = None,
+        counter_party: Optional[str] = None,
+        hourly_change: Optional[float] = None,
         check_order_only: bool = False,
     ) -> "Order":
         """Creates a new order.
@@ -129,7 +131,7 @@ class Order(BaseModel):
         Args:
             client: Alpha Trader Client
             action: Security Order Action, either "BUY" or "SELL"
-            quantity:  Number of shares to buy or sell
+            quantity: Number of shares to buy or sell
             price: Price
             good_after_date: Valid from date (premium feature)
             good_till_date: Valid until date (premium feature)
@@ -143,6 +145,8 @@ class Order(BaseModel):
         Returns:
             Order
 
+        Raises:
+            OrderError: If order creation fails or check fails
         """
         data = {
             "action": action,
@@ -158,11 +162,25 @@ class Order(BaseModel):
             "hourlyChange": hourly_change,
         }
 
-        response = client.request("POST", "api/securityorders", data=data)
-        if response.status_code not in [200, 201]:
-            print(response.text)
+        # Use raise_for_status=False to handle order-specific errors
+        response = client.request(
+            "POST", "api/securityorders", data=data, raise_for_status=False
+        )
 
-        return Order.initialize_from_api_response(response.json(), client)
+        if response.status_code not in [200, 201]:
+            try:
+                error_data = response.json()
+                message = error_data.get("message", response.text)
+                check_result = error_data.get("checkResult")
+            except ValueError:
+                message = response.text
+                check_result = None
+            logger.error(f"Order creation failed: {message}")
+            raise OrderError(message, check_result=check_result)
+
+        order = Order.initialize_from_api_response(response.json(), client)
+        logger.info(f"Order created: {order}")
+        return order
 
     def update(self):
         response = self.client.request("GET", f"api/securityorders/{self.id}")

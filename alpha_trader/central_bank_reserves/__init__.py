@@ -1,7 +1,11 @@
+from typing import Any, Dict
+
 from pydantic import BaseModel
 
 from alpha_trader.company import Company
 from alpha_trader.client import Client
+from alpha_trader.exceptions import APIError, InsufficientFundsError
+from alpha_trader.logging import logger
 
 
 class BankingLicense(BaseModel):
@@ -49,30 +53,95 @@ class CentralBankReserves(BaseModel):
             version=api_response["version"]
         )
 
-    def increase(self, amount: float):
-        response = self.client.request("PUT", f"api/centralbankreserves?companyId={self.banking_license.company_id}&cashAmount={amount}")
+    def increase(self, amount: float) -> None:
+        """Increase central bank reserves.
+
+        Args:
+            amount: Amount to increase reserves by
+
+        Raises:
+            InsufficientFundsError: If insufficient funds available
+            APIError: If the operation fails
+        """
+        response = self.client.request(
+            "PUT",
+            f"api/centralbankreserves?companyId={self.banking_license.company_id}&cashAmount={amount}",
+            raise_for_status=False,
+        )
 
         if response.status_code != 200:
-            raise Exception(response.json())
+            try:
+                error_data = response.json()
+                message = error_data.get("message", str(error_data))
+            except ValueError:
+                message = response.text
 
-        if response.status_code == 200:
-            self.cash_holding += amount
+            if "insufficient" in message.lower():
+                raise InsufficientFundsError(message)
+            raise APIError(
+                message,
+                status_code=response.status_code,
+                endpoint="api/centralbankreserves",
+            )
 
-        return response
+        self.cash_holding += amount
+        logger.info(f"Increased central bank reserves by {amount}. New holding: {self.cash_holding}")
 
-    def get_coins_needed_for_boost(self, multiplier: int = 200):
+    def get_coins_needed_for_boost(self, multiplier: int = 200) -> int:
+        """Get the number of coins needed for a boost.
+
+        Args:
+            multiplier: Boost multiplier (default 200)
+
+        Returns:
+            Number of coins needed
+        """
         return self.coins_for_next_boost * multiplier
 
-    def boost(self, multiplier: int = 200):
-        response = self.client.request("PUT", f"api/v2/centralbankreserves/{self.id}?increaseInterestRateBoost=true&multiplier={multiplier}")
+    def boost(self, multiplier: int = 200) -> Dict[str, Any]:
+        """Boost the interest rate.
+
+        Args:
+            multiplier: Boost multiplier (default 200)
+
+        Returns:
+            Response data from the API
+
+        Raises:
+            InsufficientFundsError: If insufficient coins available
+            APIError: If the operation fails
+        """
+        response = self.client.request(
+            "PUT",
+            f"api/v2/centralbankreserves/{self.id}?increaseInterestRateBoost=true&multiplier={multiplier}",
+            raise_for_status=False,
+        )
 
         if response.status_code != 200:
-            raise Exception(response.json())
+            try:
+                error_data = response.json()
+                message = error_data.get("message", str(error_data))
+            except ValueError:
+                message = response.text
 
-        return response
+            if "insufficient" in message.lower() or "coins" in message.lower():
+                raise InsufficientFundsError(message)
+            raise APIError(
+                message,
+                status_code=response.status_code,
+                endpoint=f"api/v2/centralbankreserves/{self.id}",
+            )
 
-    def payment_information(self):
-        response = self.client.request("GET", f"api/lastcentralbankreservespayment")
+        logger.info(f"Boosted interest rate with multiplier {multiplier}")
+        return response.json()
+
+    def payment_information(self) -> Dict[str, Any]:
+        """Get payment information for central bank reserves.
+
+        Returns:
+            Payment information from the API
+        """
+        response = self.client.request("GET", "api/lastcentralbankreservespayment")
 
         return response.json()
 
