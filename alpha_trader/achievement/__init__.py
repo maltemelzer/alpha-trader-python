@@ -1,8 +1,9 @@
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 from pydantic import BaseModel
 
 from alpha_trader.client import Client
 from alpha_trader.logging import logger
+from alpha_trader.exceptions import ResourceStateError
 
 
 class Achievement(BaseModel):
@@ -48,9 +49,16 @@ class Achievement(BaseModel):
     def __repr__(self):
         return self.__str__()
 
-    def claim(self):
+    def claim(self) -> None:
+        """Claim this achievement.
+
+        Raises:
+            ResourceStateError: If the achievement has already been claimed
+        """
         if self.claimed:
-            raise Exception("Achievement already claimed")
+            raise ResourceStateError(
+                f"Achievement '{self.description}' has already been claimed"
+            )
 
         response = self.client.request(
             "PUT", f"api/v2/my/userachievementclaim/{self.id}"

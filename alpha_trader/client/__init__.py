@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Union, Dict, List
+from typing import Optional, Union, Dict, List
+from urllib.parse import urljoin
 import requests
-import os
 
 from typing import TYPE_CHECKING
 
@@ -26,6 +26,14 @@ if TYPE_CHECKING:
     from alpha_trader.system_bond import SystemBond
 
 from alpha_trader.logging import logger
+from alpha_trader.exceptions import (
+    AuthenticationError,
+    NotAuthenticatedError,
+    APIError,
+    NotFoundError,
+    ValidationError,
+    PermissionError as APIPermissionError,
+)
 
 
 class Client(BaseModel):
@@ -69,8 +77,11 @@ class Client(BaseModel):
 
         Returns:
             Token string
+
+        Raises:
+            AuthenticationError: If authentication fails due to invalid credentials
         """
-        url = os.path.join(self.base_url, "user/token/")
+        url = self._build_url("user/token/")
 
         payload = {
             "username": self.username,
@@ -80,12 +91,38 @@ class Client(BaseModel):
 
         response = requests.request("POST", url, data=payload)
 
-        self.token = response.json()["message"]
-        self.authenticated = True
+        if response.status_code == 401:
+            raise AuthenticationError("Invalid credentials", status_code=401)
+        elif response.status_code == 403:
+            raise AuthenticationError("Access forbidden - check partner ID", status_code=403)
+        elif response.status_code >= 400:
+            raise AuthenticationError(
+                f"Authentication failed: {response.text}",
+                status_code=response.status_code
+            )
 
+        try:
+            data = response.json()
+            self.token = data["message"]
+        except (KeyError, ValueError) as e:
+            raise AuthenticationError(f"Invalid response from server: {e}")
+
+        self.authenticated = True
         logger.info("Client successfully authenticated.")
 
         return self.token
+
+    def _build_url(self, endpoint: str) -> str:
+        """Build a full URL from the base URL and endpoint.
+
+        Args:
+            endpoint: The API endpoint path
+
+        Returns:
+            The full URL
+        """
+        base = self.base_url if self.base_url.endswith("/") else f"{self.base_url}/"
+        return urljoin(base, endpoint)
 
     def __get_headers(self):
         """"""
@@ -94,10 +131,19 @@ class Client(BaseModel):
         return headers
 
     def request(
-            self, method: str, endpoint: str, data: Dict = None, json: Dict = None, additional_headers: Dict = None, params: Dict = None
+        self,
+        method: str,
+        endpoint: str,
+        data: Optional[Dict] = None,
+        json: Optional[Dict] = None,
+        additional_headers: Optional[Dict] = None,
+        params: Optional[Dict] = None,
+        raise_for_status: bool = True,
     ) -> requests.Response:
-        """Make a request using the authenticated client. This method is mainly used internally by other classes
-        to retrieve more information from the API.
+        """Make a request using the authenticated client.
+
+        This method is mainly used internally by other classes to retrieve more
+        information from the API.
 
         Example:
             ```python
@@ -105,22 +151,31 @@ class Client(BaseModel):
             >>> user_information = response.json()
             >>> user_information["username"]
             Malte
+            ```
 
         Args:
-            body: body parameters
+            method: HTTP method (GET, POST, PUT, DELETE, etc.)
+            endpoint: API endpoint path
+            data: Form data to send in the request body
+            json: JSON data to send in the request body
             additional_headers: Additional headers to be added to the request
-            method: HTTP method
-            endpoint: Endpoint
-            data: Data
+            params: Query parameters
+            raise_for_status: If True, raise an exception for error status codes
 
         Returns:
             HTTP Response
-        """
 
-        url = os.path.join(self.base_url, endpoint)
+        Raises:
+            NotAuthenticatedError: If the client is not authenticated
+            NotFoundError: If the resource is not found (404)
+            ValidationError: If the request is invalid (400)
+            APIPermissionError: If permission is denied (403)
+            APIError: For other API errors
+        """
+        url = self._build_url(endpoint)
 
         if not self.authenticated:
-            raise Exception("Client is not authenticated.")
+            raise NotAuthenticatedError()
 
         if additional_headers is None:
             headers = self.__get_headers()
@@ -131,7 +186,50 @@ class Client(BaseModel):
             method, url, data=data, headers=headers, params=params, json=json
         )
 
+        if raise_for_status:
+            self._handle_response_errors(response, endpoint)
+
         return response
+
+    def _handle_response_errors(self, response: requests.Response, endpoint: str) -> None:
+        """Handle error responses from the API.
+
+        Args:
+            response: The HTTP response
+            endpoint: The API endpoint that was called
+
+        Raises:
+            NotFoundError: If the resource is not found (404)
+            ValidationError: If the request is invalid (400)
+            APIPermissionError: If permission is denied (403)
+            AuthenticationError: If authentication failed (401)
+            APIError: For other API errors
+        """
+        if response.status_code < 400:
+            return
+
+        try:
+            error_data = response.json()
+            message = error_data.get("message", str(error_data))
+        except ValueError:
+            error_data = None
+            message = response.text or f"HTTP {response.status_code}"
+
+        if response.status_code == 400:
+            raise ValidationError(message, response=error_data, endpoint=endpoint)
+        elif response.status_code == 401:
+            raise AuthenticationError(message, status_code=401)
+        elif response.status_code == 403:
+            raise APIPermissionError(message, response=error_data, endpoint=endpoint)
+        elif response.status_code == 404:
+            raise NotFoundError(message, response=error_data, endpoint=endpoint)
+        else:
+            raise APIError(
+                message,
+                status_code=response.status_code,
+                response=error_data,
+                endpoint=endpoint,
+            )
 
     def get_user(self) -> User:
         """Get the user information for the authenticated user.
@@ -157,13 +255,17 @@ class Client(BaseModel):
 
     def get_miner(self) -> Miner:
         """Get the miner information for the authenticated user.
-        :return: Miner
+
+        Returns:
+            Miner
+
+        Raises:
+            NotAuthenticatedError: If the client is not authenticated
+            APIError: If the API request fails
         """
         from alpha_trader.miner import Miner
 
-        url = os.path.join(self.base_url, "api/v2/my/miner")
-
-        response = requests.get(url, headers=self.__get_headers())
+        response = self.request("GET", "api/v2/my/miner")
 
         return Miner.from_api_response(response.json(), client=self)
 
@@ -287,17 +389,23 @@ class Client(BaseModel):
     def get_bonds(self, page: int, search: str, page_size: int):
         pass
 
-    def register_user(self, username: str, password: str, email: str, locale: str = None) -> User:
-        """
-            Register a new user
+    def register_user(
+        self, username: str, password: str, email: str, locale: Optional[str] = None
+    ) -> User:
+        """Register a new user.
+
         Args:
             username: Username
             password: Password
             email: Email
-            locale: Locale
+            locale: Locale (optional)
 
         Returns:
             User
+
+        Raises:
+            ValidationError: If the registration data is invalid
+            APIError: If registration fails
         """
         from alpha_trader.user import User
 
@@ -308,9 +416,22 @@ class Client(BaseModel):
             "locale": locale,
         }
 
-        response = requests.post(f"{self.base_url}/user/register", data=data)
-        if response.status_code != 201:
-            raise Exception(response.text)
+        url = self._build_url("user/register")
+        response = requests.post(url, data=data)
+
+        if response.status_code == 400:
+            try:
+                error_data = response.json()
+                message = error_data.get("message", response.text)
+            except ValueError:
+                message = response.text
+            raise ValidationError(message, endpoint="user/register")
+        elif response.status_code != 201:
+            raise APIError(
+                response.text,
+                status_code=response.status_code,
+                endpoint="user/register",
+            )
 
         self.login()
 

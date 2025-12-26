@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
-from typing import Dict, Union, List
+from typing import Dict, Optional, Union, List
 
 from alpha_trader.client import Client
 from alpha_trader.achievement import Achievement
 from alpha_trader.logging import logger
 from alpha_trader.securities_account import SecuritiesAccount
 from alpha_trader.bank_account import BankAccount
+from alpha_trader.exceptions import PermissionError as APIPermissionError
 
 from typing import TYPE_CHECKING
 
@@ -142,15 +143,20 @@ class User(BaseModel):
         ]
 
     @property
-    def securities_account(self):
-        """
-            Get the securities account for the user
+    def securities_account(self) -> SecuritiesAccount:
+        """Get the securities account for the user.
 
         Returns:
             Securities account
+
+        Raises:
+            APIPermissionError: If trying to access securities account of another user
         """
         if not self.my_user:
-            raise Exception("Cannot retrieve securities account for other users")
+            raise APIPermissionError(
+                "Cannot retrieve securities account for other users",
+                endpoint="api/v2/my/securitiesaccount",
+            )
 
         response = self.client.request("GET", "api/v2/my/securitiesaccount")
 
@@ -218,29 +224,35 @@ class User(BaseModel):
 
     @property
     def bank_account(self) -> BankAccount:
-        """
-            Get the bank account for the user
+        """Get the bank account for the user.
+
         Returns:
             Bank account
+
+        Raises:
+            APIPermissionError: If trying to access bank account of another user
         """
         if not self.my_user:
-            raise Exception("Cannot retrieve bank account for other users")
+            raise APIPermissionError(
+                "Cannot retrieve bank account for other users",
+                endpoint="api/v2/my/bankaccounts/",
+            )
 
         response = self.client.request("GET", "api/v2/my/bankaccounts/")
 
         return BankAccount.initialize_from_api_response(response.json()[0], self.client)
 
     def retrieve_salary(self) -> None:
-        """
-            Retrieve all the salaries for the user
-        Returns:
-            None
+        """Retrieve all the salaries for the user.
 
+        Raises:
+            APIPermissionError: If trying to retrieve salary for another user
         """
         if not self.my_user:
-            raise Exception("Cannot retrieve salary for other users.")
+            raise APIPermissionError(
+                "Cannot retrieve salary for other users",
+                endpoint="api/v2/my/salarypayments",
+            )
 
-        response = self.client.request("PUT", "api/v2/my/salarypayments")
-
-        if response.status_code == 200:
-            logger.info("Successfully retrieved salary")
+        self.client.request("PUT", "api/v2/my/salarypayments")
+        logger.info("Successfully retrieved salary")

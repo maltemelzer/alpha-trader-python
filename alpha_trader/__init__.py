@@ -3,6 +3,20 @@ __version__ = "0.7.0"
 # Core
 from alpha_trader.client import Client
 
+# Exceptions
+from alpha_trader.exceptions import (
+    AlphaTraderError,
+    AuthenticationError,
+    NotAuthenticatedError,
+    APIError,
+    NotFoundError,
+    ValidationError,
+    PermissionError,
+    InsufficientFundsError,
+    OrderError,
+    ResourceStateError,
+)
+
 # New modules
 from alpha_trader.trade_stats import TradeStats, TradeSummary, Trade
 from alpha_trader.order_log import OrderLogEntry, get_order_logs, get_order_logs_by_security
@@ -42,8 +56,21 @@ from alpha_trader.system_bond import (
 )
 
 __all__ = [
+    # Version
+    "__version__",
     # Core
     "Client",
+    # Exceptions
+    "AlphaTraderError",
+    "AuthenticationError",
+    "NotAuthenticatedError",
+    "APIError",
+    "NotFoundError",
+    "ValidationError",
+    "PermissionError",
+    "InsufficientFundsError",
+    "OrderError",
+    "ResourceStateError",
     # Trade Statistics
     "TradeStats",
     "TradeSummary",
