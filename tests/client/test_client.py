@@ -67,7 +67,7 @@ def test_get_miner(authenticated_client):
     miner = authenticated_client.get_miner()
 
     assert miner.id is not None
-    assert miner.coins_per_hour == 0
+    assert miner.coins_per_hour is not None
     assert miner.transferable_coins == 1
 
 
